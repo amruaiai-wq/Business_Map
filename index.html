@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Project Mind Map — ติดตามความคืบหน้าโปรเจกต์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root{
+    --bg:#FAFAFA;
+    --surface:#FFFFFF;
+    --line:#E5E5E5;
+    --line-soft:#D4D4D4;
+    --ink:#171717;
+    --ink-2:#525252;
+    --ink-3:#A3A3A3;
+    --accent:#4F46E5;
+    --accent-soft:#EEF2FF;
+    --done:#16A34A;
+    --todo:#A3A3A3;
+    --radius:10px;
+    --t:160ms cubic-bezier(.4,0,.2,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"IBM Plex Sans Thai","Noto Sans Thai",sans-serif;
+    font-weight:400;
+    font-size:14px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+  button{cursor:pointer;background:none;border:none}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+  .en{
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-3);font-weight:500;
+  }
+  .eyebrow{
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-3);font-weight:500;
+  }
+
+  /* ---------- shell ---------- */
+  #app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+  .view{display:none;flex:1;min-height:0;flex-direction:column}
+  .view.active{display:flex}
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    height:36px;padding:0 14px;border-radius:8px;
+    border:1px solid var(--line);background:var(--surface);
+    font-weight:500;color:var(--ink);
+    transition:border-color var(--t),background var(--t),color var(--t);
+  }
+  .btn:hover{border-color:var(--ink-3)}
+  .btn .en{color:inherit;opacity:.5}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn-primary:hover{background:#4338CA;border-color:#4338CA}
+  .btn-danger{color:#DC2626}
+  .btn-danger:hover{border-color:#DC2626}
+  .btn-ghost{border-color:transparent;background:transparent;color:var(--ink-2);padding:0 8px}
+  .btn-ghost:hover{color:var(--ink);border-color:var(--line)}
+  .btn-sm{height:30px;padding:0 10px;font-size:13px}
+
+  /* ---------- topbar ---------- */
+  .topbar{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:16px 24px;border-bottom:1px solid var(--line);
+    background:var(--surface);
+  }
+  .topbar .grow{flex:1;min-width:120px}
+  .sync{display:flex;align-items:center;gap:8px}
+  .sync-time{font-size:12px;color:var(--ink-3);white-space:nowrap}
+  .dot-live{width:6px;height:6px;border-radius:50%;background:var(--done);flex:none}
+
+  /* ---------- dashboard ---------- */
+  .page{flex:1;overflow-y:auto;padding:32px 24px 80px}
+  .page-inner{max-width:1000px;margin:0 auto}
+  .page-head{margin-bottom:28px}
+  .page-head h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin-top:4px}
+  .page-head p{color:var(--ink-2);font-size:13px;margin-top:6px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 18px 16px;cursor:pointer;position:relative;
+    transition:border-color var(--t),transform var(--t);
+  }
+  .card:hover{border-color:var(--accent)}
+  .card:active{transform:scale(.995)}
+  .card h3{font-size:16px;font-weight:600;padding-right:28px;word-break:break-word}
+  .card .meta{font-size:12px;color:var(--ink-3);margin-top:2px}
+  .card .prog-label{display:flex;justify-content:space-between;align-items:baseline;margin-top:18px;font-size:12px;color:var(--ink-2)}
+  .card .prog-label b{font-weight:500;color:var(--ink)}
+  .bar{height:3px;background:var(--line);border-radius:2px;margin-top:8px;overflow:hidden}
+  .bar span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width 300ms ease}
+  .card .del{
+    position:absolute;top:12px;right:10px;width:28px;height:28px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;color:var(--ink-3);
+    opacity:0;transition:opacity var(--t),color var(--t),background var(--t);
+  }
+  .card:hover .del,.card .del:focus-visible{opacity:1}
+  .card .del:hover{color:#DC2626;background:#FEF2F2}
+  @media(hover:none){.card .del{opacity:1}}
+
+  .empty{
+    text-align:center;padding:72px 20px;border:1px dashed var(--line);
+    border-radius:var(--radius);background:var(--surface);
+  }
+  .empty h3{font-size:17px;font-weight:600}
+  .empty p{color:var(--ink-2);font-size:13px;margin:6px 0 18px}
+
+  .foot-note{
+    text-align:center;font-size:12px;color:var(--ink-3);
+    margin-top:32px;padding-top:20px;border-top:1px solid var(--line);
+  }
+
+  /* ---------- mind map ---------- */
+  .map-wrap{flex:1;position:relative;min-height:0;background:var(--bg);overflow:hidden}
+  svg#map{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+  svg#map.grabbing{cursor:grabbing}
+  .edge{fill:none;stroke:var(--line-soft);stroke-width:1}
+  .node-box{fill:var(--surface);stroke:var(--line);stroke-width:1;transition:stroke var(--t)}
+  .node:hover .node-box{stroke:var(--accent)}
+  .node.sel .node-box{stroke:var(--accent);stroke-width:1.5}
+  .node{cursor:pointer}
+  .node-title{fill:var(--ink);font-size:13px;font-weight:500}
+  .node-sub{fill:var(--ink-3);font-size:10px;font-weight:400}
+  .center-circle{fill:var(--surface);stroke:var(--ink);stroke-width:1.25}
+  .center-title{fill:var(--ink);font-size:14px;font-weight:600;text-anchor:middle}
+  .center-hint{fill:var(--ink-3);font-size:10px;text-anchor:middle;letter-spacing:.08em}
+  .add-btn circle{fill:var(--surface);stroke:var(--line);stroke-width:1;transition:stroke var(--t),fill var(--t)}
+  .add-btn:hover circle{stroke:var(--accent);fill:var(--accent-soft)}
+  .add-btn path{stroke:var(--ink-3);stroke-width:1.2;stroke-linecap:round}
+  .add-btn:hover path{stroke:var(--accent)}
+  .map-empty{
+    position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
+    text-align:center;color:var(--ink-3);font-size:13px;pointer-events:none;
+  }
+  .zoom{
+    position:absolute;right:16px;bottom:16px;display:flex;flex-direction:column;
+    background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;
+  }
+  .zoom button{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--ink-2);transition:background var(--t)}
+  .zoom button:hover{background:var(--bg);color:var(--ink)}
+  .zoom button+button{border-top:1px solid var(--line)}
+  .legend{
+    position:absolute;left:16px;bottom:16px;display:flex;gap:14px;align-items:center;
+    background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;
+    font-size:12px;color:var(--ink-2);
+  }
+  .legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  @media(max-width:640px){.legend{display:none}}
+
+  /* ---------- panel / bottom sheet ---------- */
+  .scrim{
+    position:fixed;inset:0;background:rgba(23,23,23,.28);
+    opacity:0;pointer-events:none;transition:opacity var(--t);z-index:40;
+  }
+  .scrim.on{opacity:1;pointer-events:auto}
+  .panel{
+    position:fixed;top:0;right:0;height:100dvh;width:360px;max-width:100vw;
+    background:var(--surface);border-left:1px solid var(--line);
+    z-index:50;display:flex;flex-direction:column;
+    transform:translateX(100%);transition:transform 200ms cubic-bezier(.4,0,.2,1);
+  }
+  .panel.on{transform:none}
+  .panel-head{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 20px 14px;border-bottom:1px solid var(--line)}
+  .panel-head h2{font-size:17px;font-weight:600}
+  .panel-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:18px}
+  .panel-foot{display:flex;gap:8px;padding:16px 20px;border-top:1px solid var(--line)}
+  .panel-foot .btn-primary{flex:1;justify-content:center}
+
+  .field label{display:flex;align-items:baseline;gap:8px;margin-bottom:7px;font-weight:500;font-size:13px}
+  .field input[type=text],.field input[type=email],.field input[type=password],.field select,.field textarea{
+    width:100%;border:1px solid var(--line);border-radius:8px;background:var(--surface);
+    padding:9px 11px;transition:border-color var(--t);
+  }
+  .field textarea{resize:vertical;min-height:88px;line-height:1.6}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
+  .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .seg button{
+    border:1px solid var(--line);border-radius:8px;padding:9px 4px;background:var(--surface);
+    display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1.2;
+    transition:border-color var(--t),background var(--t);
+  }
+  .seg button small{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  .seg button:hover{border-color:var(--ink-3)}
+  .seg button[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}
+  .seg .sdot{width:8px;height:8px;border-radius:50%;display:block;margin-bottom:2px}
+  .breadcrumb{font-size:12px;color:var(--ink-3);word-break:break-word}
+
+  @media(max-width:640px){
+    .panel{
+      top:auto;bottom:0;right:0;left:0;width:auto;height:auto;max-height:86dvh;
+      border-left:none;border-top:1px solid var(--line);
+      border-radius:16px 16px 0 0;transform:translateY(100%);
+    }
+    .panel.on{transform:none}
+    .topbar{padding:12px 14px;gap:8px}
+    .page{padding:22px 14px 60px}
+    .grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- modal ---------- */
+  .modal{
+    position:fixed;z-index:60;left:50%;top:50%;transform:translate(-50%,-48%);
+    width:min(420px,calc(100vw - 32px));background:var(--surface);
+    border:1px solid var(--line);border-radius:12px;
+    opacity:0;pointer-events:none;transition:opacity var(--t),transform var(--t);
+  }
+  .modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+  .modal-body{padding:22px 22px 6px}
+  .modal-body h2{font-size:17px;font-weight:600;margin-bottom:4px}
+  .modal-body p{color:var(--ink-2);font-size:13px;margin-bottom:16px}
+  .modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:16px 22px 20px}
+  .team-list{display:flex;flex-direction:column;gap:6px;margin-top:14px;max-height:220px;overflow-y:auto}
+  .team-row{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:7px 8px 7px 12px}
+  .team-row button{width:26px;height:26px;border-radius:6px;color:var(--ink-3);display:flex;align-items:center;justify-content:center}
+  .team-row button:hover{color:#DC2626;background:#FEF2F2}
+  .row{display:flex;gap:8px}
+  .row input{flex:1}
+  .muted{color:var(--ink-3);font-size:12px}
+
+  /* ---------- states ---------- */
+  .state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px;text-align:center}
+  .spinner{width:20px;height:20px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .toast{
+    position:fixed;left:50%;bottom:24px;transform:translate(-50%,12px);z-index:70;
+    background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;
+    opacity:0;pointer-events:none;transition:opacity var(--t),transform var(--t);
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- LOADING -->
+  <div class="view active" id="v-loading">
+    <div class="state">
+      <div class="spinner"></div>
+      <div class="muted">กำลังโหลดข้อมูล · Loading</div>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="view" id="v-error">
+    <div class="state">
+      <div class="eyebrow">Storage error</div>
+      <h2 style="font-size:18px;font-weight:600">เชื่อมต่อข้อมูลไม่สำเร็จ</h2>
+      <p class="muted" id="err-msg" style="max-width:360px">ระบบดึงข้อมูลจาก Supabase ไม่ได้ ลองใหม่อีกครั้ง</p>
+      <button class="btn btn-primary" id="err-retry">ลองใหม่ <span class="en">Retry</span></button>
+    </div>
+  </div>
+
+  <!-- AUTH -->
+  <div class="view" id="v-auth">
+    <div class="state">
+      <div class="eyebrow">Sign in</div>
+      <h2 style="font-size:18px;font-weight:600">เข้าสู่ระบบ</h2>
+      <p class="muted" style="max-width:320px">ล็อกอินด้วยอีเมลเพื่อเข้าถึง shared workspace ของทีม</p>
+      <div class="field" style="width:100%;max-width:300px;text-align:left">
+        <label for="auth-email">อีเมล <span class="en">Email</span></label>
+        <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="username" />
+      </div>
+      <div class="field" style="width:100%;max-width:300px;text-align:left">
+        <label for="auth-password">รหัสผ่าน <span class="en">Password</span></label>
+        <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <div class="muted" id="auth-err" style="color:#DC2626;display:none;max-width:300px"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" id="auth-signin">เข้าสู่ระบบ <span class="en">Sign in</span></button>
+        <button class="btn" id="auth-signup">สมัครสมาชิก <span class="en">Sign up</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="view" id="v-dash">
+    <div class="topbar">
+      <div class="grow">
+        <div class="eyebrow">Project tracker</div>
+        <strong style="font-weight:600">โปรเจกต์ทั้งหมด</strong>
+      </div>
+      <div class="sync">
+        <span class="dot-live"></span>
+        <span class="sync-time" id="dash-sync">—</span>
+        <button class="btn btn-sm" id="dash-refresh">รีเฟรช <span class="en">Sync</span></button>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="dash-signout">ออกจากระบบ <span class="en">Sign out</span></button>
+      <button class="btn btn-primary btn-sm" id="btn-new-project">+ เพิ่มโปรเจกต์</button>
+    </div>
+    <div class="page">
+      <div class="page-inner">
+        <div class="page-head">
+          <h1>ติดตามความคืบหน้า</h1>
+          <p>ทุกคนในทีมที่ล็อกอินเห็นและแก้ไขข้อมูลชุดเดียวกัน — shared workspace, real-time sync.</p>
+        </div>
+        <div id="dash-content"></div>
+        <div class="foot-note">
+          ข้อมูลนี้เป็นแบบ <b>shared</b> — ทุกคนที่ล็อกอินเข้าแอปนี้เห็นและแก้ไขร่วมกันได้
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MIND MAP -->
+  <div class="view" id="v-map">
+    <div class="topbar">
+      <button class="btn btn-ghost btn-sm" id="btn-back">← โปรเจกต์ทั้งหมด</button>
+      <div class="grow" style="min-width:0">
+        <div class="eyebrow">Mind map</div>
+        <strong id="map-title" style="font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></strong>
+      </div>
+      <div class="sync">
+        <span class="dot-live"></span>
+        <span class="sync-time" id="map-sync">—</span>
+        <button class="btn btn-sm" id="map-refresh">รีเฟรช <span class="en">Sync</span></button>
+      </div>
+      <button class="btn btn-sm" id="btn-team">ทีม <span class="en">Team</span></button>
+      <button class="btn btn-primary btn-sm" id="btn-new-cp">+ เพิ่ม checkpoint</button>
+      <button class="btn btn-ghost btn-sm" id="map-signout">ออกจากระบบ <span class="en">Sign out</span></button>
+    </div>
+    <div class="map-wrap">
+      <svg id="map"><g id="viewport"></g></svg>
+      <div class="map-empty" id="map-empty" hidden>
+        ยังไม่มี checkpoint — กด <b>+ เพิ่ม checkpoint</b> หรือแตะวงกลมตรงกลางเพื่อเริ่ม
+      </div>
+      <div class="legend">
+        <span><i style="background:#A3A3A3"></i>รอเริ่ม To&nbsp;do</span>
+        <span><i style="background:#4F46E5"></i>กำลังทำ In&nbsp;progress</span>
+        <span><i style="background:#16A34A"></i>เสร็จแล้ว Done</span>
+      </div>
+      <div class="zoom">
+        <button id="z-in" title="ขยาย Zoom in">+</button>
+        <button id="z-out" title="ย่อ Zoom out">−</button>
+        <button id="z-fit" title="พอดีจอ Reset" style="font-size:12px">⤢</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIM -->
+<div class="scrim" id="scrim"></div>
+
+<!-- CHECKPOINT PANEL -->
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="panel-title">
+  <div class="panel-head">
+    <div style="min-width:0">
+      <div class="eyebrow" id="panel-kicker">Checkpoint</div>
+      <h2 id="panel-title">แก้ไข checkpoint</h2>
+      <div class="breadcrumb" id="panel-crumb"></div>
+    </div>
+    <button class="btn btn-ghost btn-sm" id="panel-close" aria-label="ปิด Close">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="field">
+      <label for="f-title">ชื่อ checkpoint <span class="en">Title</span></label>
+      <input type="text" id="f-title" maxlength="120" placeholder="เช่น ออกแบบหน้า Landing page" />
+    </div>
+    <div class="field">
+      <label>สถานะ <span class="en">Status</span></label>
+      <div class="seg" id="f-status">
+        <button type="button" data-v="todo" aria-pressed="true"><span class="sdot" style="background:#A3A3A3"></span>รอเริ่ม<small>To do</small></button>
+        <button type="button" data-v="in_progress" aria-pressed="false"><span class="sdot" style="background:#4F46E5"></span>กำลังทำ<small>In progress</small></button>
+        <button type="button" data-v="done" aria-pressed="false"><span class="sdot" style="background:#16A34A"></span>เสร็จแล้ว<small>Done</small></button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-assignee">ผู้รับผิดชอบ <span class="en">Assignee</span></label>
+      <select id="f-assignee"></select>
+      <div class="muted" style="margin-top:6px">เพิ่มรายชื่อได้ที่ปุ่ม “ทีม” ด้านบน</div>
+    </div>
+    <div class="field">
+      <label for="f-note">หมายเหตุ <span class="en">Note</span></label>
+      <textarea id="f-note" maxlength="1000" placeholder="รายละเอียด สิ่งที่ค้างอยู่ หรือสิ่งที่ต้องรอ…"></textarea>
+    </div>
+  </div>
+  <div class="panel-foot">
+    <button class="btn btn-primary" id="panel-save">บันทึก <span class="en">Save</span></button>
+    <button class="btn btn-danger" id="panel-delete">ลบ <span class="en">Delete</span></button>
+  </div>
+</aside>
+
+<!-- GENERIC MODAL -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-body" id="modal-body"></div>
+  <div class="modal-foot" id="modal-foot"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ============ Supabase client ============
+     วางค่าโปรเจกต์ Supabase ของคุณตรงนี้ (Project Settings → API)
+     anon key เป็น public key ที่ปลอดภัยให้ใช้ฝั่ง client ได้ — Row Level Security
+     ต่างหากคือสิ่งที่ป้องกันข้อมูลจริง ๆ */
+  const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  /* ============ utils ============ */
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const clamp = (v,a,b) => Math.min(b, Math.max(a, v));
+  const STATUS = {
+    todo:{ th:'รอเริ่ม', en:'To do', color:'#A3A3A3' },
+    in_progress:{ th:'กำลังทำ', en:'In progress', color:'#4F46E5' },
+    done:{ th:'เสร็จแล้ว', en:'Done', color:'#16A34A' }
+  };
+  const fmtDate = ts => new Date(ts).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
+  const fmtTime = ts => new Date(ts).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+
+  let toastT;
+  function toast(msg){
+    const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('on'), 2600);
+  }
+
+  /* แปลงแถวจากตาราง checkpoints (snake_case) ให้เป็นรูปแบบที่โค้ด mind map เดิมใช้ (camelCase) */
+  function normalizeCheckpoint(r){
+    return {
+      id: r.id,
+      parentId: r.parent_id || null,
+      title: r.title,
+      status: r.status,
+      assignee: r.assignee || '',
+      note: r.note || '',
+      createdAt: r.created_at ? new Date(r.created_at).getTime() : Date.now()
+    };
+  }
+
+  /* measure text for ellipsis */
+  const mctx = document.createElement('canvas').getContext('2d');
+  function fit(text, px, weight){
+    mctx.font = `${weight} ${px}px "IBM Plex Sans Thai","Noto Sans Thai",sans-serif`;
+    return maxw => {
+      if(mctx.measureText(text).width <= maxw) return text;
+      let s = text;
+      while(s.length > 1 && mctx.measureText(s + '…').width > maxw) s = s.slice(0,-1);
+      return s + '…';
+    };
+  }
+
+  /* ============ state ============ */
+  const state = {
+    view:'loading',
+    user:null,
+    projects:[],
+    pid:null,
+    project:{ name:'', team:[], checkpoints:[] },
+    editing:null,       // {id|null, parentId}
+    draftStatus:'todo',
+    blocked:false,      // มี modal/panel เปิดอยู่ → หยุด polling/realtime refresh
+    poll:null
+  };
+
+  function show(v){
+    state.view = v;
+    document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+    $('#v-' + v).classList.add('active');
+  }
+
+  /* ============ modal / confirm ============ */
+  function closeOverlays(){
+    $('#modal').classList.remove('on');
+    $('#panel').classList.remove('on');
+    $('#scrim').classList.remove('on');
+    state.blocked = false;
+    state.editing = null;
+    document.querySelectorAll('.node.sel').forEach(n=>n.classList.remove('sel'));
+  }
+  function openModal(bodyHTML, footButtons){
+    $('#modal-body').innerHTML = bodyHTML;
+    const foot = $('#modal-foot'); foot.innerHTML = '';
+    footButtons.forEach(b => {
+      const el = document.createElement('button');
+      el.className = 'btn ' + (b.kind === 'primary' ? 'btn-primary' : b.kind === 'danger' ? 'btn-danger' : '');
+      el.innerHTML = b.label;
+      el.onclick = b.onClick;
+      foot.appendChild(el);
+    });
+    $('#modal').classList.add('on');
+    $('#scrim').classList.add('on');
+    state.blocked = true;
+    const f = $('#modal-body input');
+    if(f) setTimeout(()=>f.focus(), 60);
+  }
+  function confirmBox({title, text, ok='ลบ', onOk}){
+    openModal(
+      `<h2>${esc(title)}</h2><p>${text}</p>`,
+      [
+        { label:'ยกเลิก <span class="en">Cancel</span>', onClick: closeOverlays },
+        { label:esc(ok) + ' <span class="en">Confirm</span>', kind:'danger', onClick: async ()=>{ closeOverlays(); await onOk(); } }
+      ]
+    );
+  }
+
+  /* ============ dashboard ============ */
+  async function loadProjects(){
+    const { data: projects, error } = await sb.from('projects').select('id,name,created_at').order('created_at', { ascending:false });
+    if(error) throw error;
+    state.projects = projects || [];
+    const withCounts = await Promise.all(state.projects.map(async p => {
+      const { data: cps } = await sb.from('checkpoints').select('status').eq('project_id', p.id);
+      const list = cps || [];
+      return { id:p.id, name:p.name, createdAt: new Date(p.created_at).getTime(), total: list.length, done: list.filter(c=>c.status==='done').length };
+    }));
+    renderDash(withCounts);
+    stamp('#dash-sync');
+  }
+
+  function stamp(sel){ $(sel).textContent = 'อัพเดตล่าสุด ' + fmtTime(Date.now()); }
+
+  function renderDash(items){
+    const box = $('#dash-content');
+    if(!items.length){
+      box.innerHTML = `
+        <div class="empty">
+          <div class="eyebrow">No projects yet</div>
+          <h3>ยังไม่มีโปรเจกต์</h3>
+          <p>เริ่มจากโปรเจกต์แรกของทีม แล้วค่อยแตก checkpoint ในหน้า mind map</p>
+          <button class="btn btn-primary" data-new>+ เพิ่มโปรเจกต์</button>
+        </div>`;
+      box.querySelector('[data-new]').onclick = newProjectModal;
+      return;
+    }
+    box.innerHTML = '<div class="grid">' + items.map(p => {
+      const pct = p.total ? Math.round(p.done / p.total * 100) : 0;
+      return `
+        <article class="card" data-id="${esc(p.id)}" tabindex="0" role="button">
+          <button class="del" data-del="${esc(p.id)}" aria-label="ลบโปรเจกต์ Delete">✕</button>
+          <h3>${esc(p.name)}</h3>
+          <div class="meta">สร้างเมื่อ ${esc(fmtDate(p.createdAt))}</div>
+          <div class="prog-label">
+            <span>เสร็จแล้ว <b>${p.done}/${p.total}</b></span>
+            <span class="en">${pct}%</span>
+          </div>
+          <div class="bar"><span style="width:${pct}%"></span></div>
+        </article>`;
+    }).join('') + '</div>';
+
+    box.querySelectorAll('.card').forEach(card => {
+      const go = () => openProject(card.dataset.id);
+      card.onclick = e => { if(!e.target.closest('[data-del]')) go(); };
+      card.onkeydown = e => { if(e.key === 'Enter') go(); };
+    });
+    box.querySelectorAll('[data-del]').forEach(b => {
+      b.onclick = e => {
+        e.stopPropagation();
+        const p = items.find(x => x.id === b.dataset.del);
+        confirmBox({
+          title:'ลบโปรเจกต์นี้?',
+          text:`<b>${esc(p.name)}</b> และ checkpoint ทั้งหมดจะถูกลบถาวร และทุกคนในทีมจะไม่เห็นโปรเจกต์นี้อีก`,
+          ok:'ลบโปรเจกต์',
+          onOk: async () => {
+            try{
+              const { error } = await sb.from('projects').delete().eq('id', p.id); // cascades checkpoints + team
+              if(error) throw error;
+              toast('ลบโปรเจกต์แล้ว · Deleted');
+              await loadProjects();
+            }catch(err){ toast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+          }
+        });
+      };
+    });
+  }
+
+  function newProjectModal(){
+    openModal(
+      `<div class="eyebrow">New project</div>
+       <h2>เพิ่มโปรเจกต์</h2>
+       <p>ตั้งชื่อโปรเจกต์ที่ทีมจะใช้ร่วมกัน</p>
+       <div class="field"><input type="text" id="np-name" maxlength="80" placeholder="เช่น เปิดตัวเว็บไซต์ Q3" /></div>`,
+      [
+        { label:'ยกเลิก <span class="en">Cancel</span>', onClick: closeOverlays },
+        { label:'สร้าง <span class="en">Create</span>', kind:'primary', onClick: async () => {
+            const name = ($('#np-name').value || '').trim();
+            if(!name){ toast('ใส่ชื่อโปรเจกต์ก่อน'); return; }
+            try{
+              const { data, error } = await sb.from('projects').insert({ name, created_by: state.user ? state.user.id : null }).select().single();
+              if(error) throw error;
+              closeOverlays();
+              toast('สร้างโปรเจกต์แล้ว · Created');
+              openProject(data.id);
+            }catch(err){ toast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+          }
+        }
+      ]
+    );
+    const inp = $('#np-name');
+    inp.onkeydown = e => { if(e.key === 'Enter') $('#modal-foot button:last-child').click(); };
+  }
+
+  /* ============ mind map ============ */
+  const NW = 156, NH = 48, CR = 64;
+  const view = { s:1, tx:0, ty:0 };
+  const svg = $('#map'), vp = $('#viewport');
+  let positions = new Map();
+
+  function childrenMap(cps){
+    const m = new Map();
+    cps.forEach(c => {
+      const k = c.parentId || 'root';
+      if(!m.has(k)) m.set(k, []);
+      m.get(k).push(c);
+    });
+    m.forEach(a => a.sort((x,y) => (x.createdAt||0) - (y.createdAt||0)));
+    return m;
+  }
+
+  function layout(cps){
+    const kids = childrenMap(cps);
+    const pos = new Map();
+    const roots = kids.get('root') || [];
+    const n = roots.length;
+    const R1 = Math.max(240, (n * 195) / (2 * Math.PI)); // ขยายรัศมีอัตโนมัติเมื่อ node เยอะ
+    const seen = new Set();
+    const place = (c, a, r) => {
+      if(seen.has(c.id)) return;
+      seen.add(c.id);
+      pos.set(c.id, { x: Math.cos(a) * r, y: Math.sin(a) * r, a, r });
+      const ch = kids.get(c.id) || [];
+      if(!ch.length) return;
+      const cr = r + 180;
+      let span = Math.min((ch.length * 175) / cr, Math.PI * 0.6);
+      if(ch.length === 1) span = 0;
+      ch.forEach((k, i) => place(k, a - span/2 + span * (i + 0.5) / ch.length, cr));
+    };
+    roots.forEach((c, i) => place(c, -Math.PI/2 + i * 2 * Math.PI / Math.max(n,1), R1));
+    // node กำพร้า (parent ถูกลบ) → ปัดเป็นระดับ 1
+    cps.forEach((c,i) => { if(!pos.has(c.id)) place(c, -Math.PI/2 + i * 0.7, R1 + 180); });
+    return pos;
+  }
+
+  function edge(p, c){
+    const mr = p.r + (c.r - p.r) * 0.5;
+    const a0 = p.r === 0 ? c.a : p.a;
+    const c1 = { x: Math.cos(a0) * mr, y: Math.sin(a0) * mr };
+    const c2 = { x: Math.cos(c.a) * mr, y: Math.sin(c.a) * mr };
+    return `M ${p.x} ${p.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${c.x} ${c.y}`;
+  }
+
+  function renderMap(){
+    const cps = state.project.checkpoints || [];
+    positions = layout(cps);
+    $('#map-empty').hidden = cps.length > 0;
+
+    let edges = '', nodes = '';
+    cps.forEach(c => {
+      const p = positions.get(c.id); if(!p) return;
+      const parent = c.parentId && positions.get(c.parentId)
+        ? positions.get(c.parentId)
+        : { x:0, y:0, a:p.a, r:0 };
+      edges += `<path class="edge" d="${edge(parent, p)}" />`;
+    });
+
+    cps.forEach(c => {
+      const p = positions.get(c.id); if(!p) return;
+      const st = STATUS[c.status] || STATUS.todo;
+      const hasA = !!c.assignee;
+      const title = fit(c.title || '(ไม่มีชื่อ)', 13, 500)(NW - 44);
+      const who = hasA ? fit(c.assignee, 10, 400)(NW - 44) : '';
+      const ty = hasA ? -3 : 4;
+      nodes += `
+        <g class="node" data-id="${esc(c.id)}" transform="translate(${p.x - NW/2},${p.y - NH/2})">
+          <rect class="node-box" width="${NW}" height="${NH}" rx="9"></rect>
+          <circle cx="16" cy="${NH/2}" r="4" fill="${st.color}"></circle>
+          <text class="node-title" x="28" y="${NH/2 + ty}" dominant-baseline="middle">${esc(title)}</text>
+          ${hasA ? `<text class="node-sub" x="28" y="${NH/2 + 12}" dominant-baseline="middle">${esc(who)}</text>` : ''}
+          ${c.note ? `<circle cx="${NW-11}" cy="11" r="2.5" fill="#D4D4D4"></circle>` : ''}
+          <g class="add-btn" data-add="${esc(c.id)}" transform="translate(${NW + 11},${NH/2})">
+            <circle r="11"></circle>
+            <path d="M -4.5 0 H 4.5 M 0 -4.5 V 4.5"></path>
+          </g>
+        </g>`;
+    });
+
+    const pname = fit(currentProjectName(), 14, 600)(CR * 1.7);
+    const center = `
+      <g class="node" data-center="1">
+        <circle class="center-circle" r="${CR}"></circle>
+        <text class="center-title" y="-2">${esc(pname)}</text>
+        <text class="center-hint" y="16">+ CHECKPOINT</text>
+      </g>`;
+
+    vp.innerHTML = edges + center + nodes;
+    applyView();
+  }
+
+  function currentProjectName(){
+    return state.project.name || 'โปรเจกต์';
+  }
+
+  function applyView(){
+    vp.setAttribute('transform', `translate(${view.tx},${view.ty}) scale(${view.s})`);
+  }
+  function fitView(){
+    const r = svg.getBoundingClientRect();
+    let max = CR + 40;
+    positions.forEach(p => { max = Math.max(max, Math.hypot(p.x, p.y) + NW/2 + 20); });
+    const s = clamp(Math.min(r.width, r.height) / (max * 2), 0.35, 1);
+    view.s = s;
+    view.tx = r.width / 2;
+    view.ty = r.height / 2;
+    applyView();
+  }
+  function zoomAt(cx, cy, f){
+    const ns = clamp(view.s * f, 0.3, 2.5);
+    const k = ns / view.s;
+    view.tx = cx - (cx - view.tx) * k;
+    view.ty = cy - (cy - view.ty) * k;
+    view.s = ns;
+    applyView();
+  }
+
+  /* pan + pinch */
+  const ptrs = new Map();
+  let panning = false, moved = false, last = null, pinchD = 0;
+  svg.addEventListener('pointerdown', e => {
+    svg.setPointerCapture(e.pointerId);
+    ptrs.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    moved = false;
+    if(ptrs.size === 1){ panning = true; last = { x:e.clientX, y:e.clientY }; svg.classList.add('grabbing'); }
+    if(ptrs.size === 2){ panning = false; pinchD = pdist(); }
+  });
+  svg.addEventListener('pointermove', e => {
+    if(!ptrs.has(e.pointerId)) return;
+    ptrs.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if(ptrs.size === 2){
+      const d = pdist();
+      if(pinchD > 0 && d > 0){
+        const r = svg.getBoundingClientRect(), m = pmid();
+        zoomAt(m.x - r.left, m.y - r.top, d / pinchD);
+      }
+      pinchD = d; moved = true;
+      return;
+    }
+    if(!panning) return;
+    const dx = e.clientX - last.x, dy = e.clientY - last.y;
+    if(Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+    view.tx += dx; view.ty += dy;
+    last = { x:e.clientX, y:e.clientY };
+    applyView();
+  });
+  const endPtr = e => {
+    ptrs.delete(e.pointerId);
+    if(ptrs.size < 2) pinchD = 0;
+    if(ptrs.size === 0){ panning = false; svg.classList.remove('grabbing'); }
+  };
+  svg.addEventListener('pointerup', endPtr);
+  svg.addEventListener('pointercancel', endPtr);
+  function pdist(){ const [a,b] = [...ptrs.values()]; return Math.hypot(a.x-b.x, a.y-b.y); }
+  function pmid(){ const [a,b] = [...ptrs.values()]; return { x:(a.x+b.x)/2, y:(a.y+b.y)/2 }; }
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    const r = svg.getBoundingClientRect();
+    zoomAt(e.clientX - r.left, e.clientY - r.top, e.deltaY < 0 ? 1.12 : 1/1.12);
+  }, { passive:false });
+
+  svg.addEventListener('click', e => {
+    if(moved) return;
+    /* setPointerCapture ด้านบนทำให้ e.target ถูกเปลี่ยนเป็น svg เอง ต้องหา element จริงจากตำแหน่งแทน */
+    const hit = document.elementFromPoint(e.clientX, e.clientY) || e.target;
+    const add = hit.closest('[data-add]');
+    if(add){ openEditor(null, add.dataset.add); return; }
+    const node = hit.closest('.node[data-id]');
+    if(node){ openEditor(node.dataset.id); return; }
+    if(hit.closest('[data-center]')) openEditor(null, null);
+  });
+
+  $('#z-in').onclick = () => { const r = svg.getBoundingClientRect(); zoomAt(r.width/2, r.height/2, 1.2); };
+  $('#z-out').onclick = () => { const r = svg.getBoundingClientRect(); zoomAt(r.width/2, r.height/2, 1/1.2); };
+  $('#z-fit').onclick = fitView;
+
+  /* ============ project load ============ */
+  async function loadProject(silent){
+    const [{ data: proj, error: e1 }, { data: cps, error: e2 }, { data: team, error: e3 }] = await Promise.all([
+      sb.from('projects').select('id,name').eq('id', state.pid).single(),
+      sb.from('checkpoints').select('*').eq('project_id', state.pid).order('created_at'),
+      sb.from('project_team').select('name').eq('project_id', state.pid)
+    ]);
+    if(e1) throw e1;
+    if(e2) throw e2;
+    state.project = {
+      name: proj ? proj.name : 'โปรเจกต์',
+      team: (team || []).map(t => t.name),
+      checkpoints: (cps || []).map(normalizeCheckpoint)
+    };
+    $('#map-title').textContent = currentProjectName();
+    renderMap();
+    if(!silent) fitView();
+    stamp('#map-sync');
+  }
+
+  async function openProject(id){
+    state.pid = id;
+    show('map');
+    unsubscribeDash();
+    stopPoll();
+    await loadProject(false);
+    subscribeMap(id);
+    startPoll();
+  }
+
+  /* ============ editor panel ============ */
+  function subtreeIds(id){
+    const kids = childrenMap(state.project.checkpoints);
+    const out = [];
+    (function walk(i){ out.push(i); (kids.get(i) || []).forEach(c => walk(c.id)); })(id);
+    return out;
+  }
+
+  function openEditor(id, parentId){
+    const cps = state.project.checkpoints;
+    const cp = id ? cps.find(c => c.id === id) : null;
+    state.editing = { id: id || null, parentId: cp ? (cp.parentId || null) : (parentId || null) };
+    state.blocked = true;
+
+    document.querySelectorAll('.node.sel').forEach(n => n.classList.remove('sel'));
+    if(id){ const g = vp.querySelector(`.node[data-id="${CSS.escape(id)}"]`); if(g) g.classList.add('sel'); }
+
+    $('#panel-kicker').textContent = id ? 'Edit checkpoint' : 'New checkpoint';
+    $('#panel-title').textContent = id ? 'แก้ไข checkpoint' : 'เพิ่ม checkpoint';
+    const par = state.editing.parentId ? cps.find(c => c.id === state.editing.parentId) : null;
+    $('#panel-crumb').textContent = par
+      ? 'แตกกิ่งจาก · under: ' + par.title
+      : 'ระดับบนสุด · top level';
+
+    $('#f-title').value = cp ? (cp.title || '') : '';
+    $('#f-note').value = cp ? (cp.note || '') : '';
+    setStatus(cp ? (cp.status || 'todo') : 'todo');
+    fillAssignees(cp ? cp.assignee : '');
+    $('#panel-delete').style.display = id ? '' : 'none';
+
+    $('#panel').classList.add('on');
+    $('#scrim').classList.add('on');
+    setTimeout(() => $('#f-title').focus(), 80);
+  }
+
+  function setStatus(v){
+    state.draftStatus = STATUS[v] ? v : 'todo';
+    $('#f-status').querySelectorAll('button').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.v === state.draftStatus)));
+  }
+  $('#f-status').querySelectorAll('button').forEach(b => b.onclick = () => setStatus(b.dataset.v));
+
+  function fillAssignees(current){
+    const sel = $('#f-assignee');
+    const names = [...new Set([...(state.project.team || []), ...(current ? [current] : [])])];
+    sel.innerHTML = '<option value="">— ยังไม่ระบุ · Unassigned —</option>' +
+      names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    sel.value = current || '';
+  }
+
+  $('#panel-close').onclick = closeOverlays;
+  $('#scrim').onclick = closeOverlays;
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeOverlays(); });
+
+  $('#panel-save').onclick = async () => {
+    const title = $('#f-title').value.trim();
+    if(!title){ toast('ใส่ชื่อ checkpoint ก่อน'); return; }
+    const ed = state.editing;
+    const patch = {
+      title,
+      status: state.draftStatus,
+      assignee: $('#f-assignee').value || '',
+      note: $('#f-note').value.trim()
+    };
+    try{
+      if(ed.id){
+        const { data, error } = await sb.from('checkpoints').update(patch).eq('id', ed.id).select().single();
+        if(error){ toast('checkpoint นี้ถูกลบโดยคนอื่นไปแล้ว'); closeOverlays(); await loadProject(true); return; }
+        const i = state.project.checkpoints.findIndex(c => c.id === ed.id);
+        if(i > -1) state.project.checkpoints[i] = normalizeCheckpoint(data);
+      }else{
+        const { data, error } = await sb.from('checkpoints')
+          .insert({ project_id: state.pid, parent_id: ed.parentId || null, ...patch })
+          .select().single();
+        if(error) throw error;
+        state.project.checkpoints.push(normalizeCheckpoint(data));
+      }
+      closeOverlays();
+      renderMap();
+      stamp('#map-sync');
+      toast(ed.id ? 'บันทึกแล้ว · Saved' : 'เพิ่ม checkpoint แล้ว · Added');
+    }catch(err){ toast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+  };
+
+  $('#panel-delete').onclick = () => {
+    const id = state.editing && state.editing.id; if(!id) return;
+    const ids = subtreeIds(id);
+    const kidCount = ids.length - 1;
+    const cp = state.project.checkpoints.find(c => c.id === id);
+    $('#panel').classList.remove('on');
+    confirmBox({
+      title:'ลบ checkpoint นี้?',
+      text: kidCount
+        ? `<b>${esc(cp.title)}</b> มี sub-checkpoint อีก <b>${kidCount}</b> รายการ — ทั้งกิ่งจะถูกลบไปด้วย`
+        : `<b>${esc(cp.title)}</b> จะถูกลบถาวร`,
+      ok:'ลบทั้งกิ่ง',
+      onOk: async () => {
+        try{
+          const { error } = await sb.from('checkpoints').delete().eq('id', id); // DB cascades ลูกหลานให้อัตโนมัติ
+          if(error) throw error;
+          const kill = new Set(ids);
+          state.project.checkpoints = state.project.checkpoints.filter(c => !kill.has(c.id));
+          renderMap();
+          stamp('#map-sync');
+          toast('ลบแล้ว · Deleted');
+        }catch(err){ toast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+      }
+    });
+  };
+
+  /* ============ team modal ============ */
+  function teamModal(){
+    const render = () => {
+      const list = state.project.team || [];
+      openModal(
+        `<div class="eyebrow">Team members</div>
+         <h2>สมาชิกทีม</h2>
+         <p>รายชื่อนี้ใช้เป็นตัวเลือก “ผู้รับผิดชอบ” ของโปรเจกต์นี้</p>
+         <div class="row">
+           <input type="text" id="tm-name" maxlength="40" placeholder="ชื่อสมาชิก · Name" />
+           <button class="btn btn-primary" id="tm-add">เพิ่ม</button>
+         </div>
+         <div class="team-list">
+           ${list.length ? list.map(n => `
+             <div class="team-row"><span>${esc(n)}</span>
+               <button data-rm="${esc(n)}" aria-label="ลบ Remove">✕</button></div>`).join('')
+             : '<div class="muted" style="padding:14px 2px">ยังไม่มีสมาชิก — เพิ่มชื่อด้านบนได้เลย</div>'}
+         </div>`,
+        [{ label:'เสร็จสิ้น <span class="en">Done</span>', kind:'primary', onClick: () => { closeOverlays(); renderMap(); } }]
+      );
+      $('#tm-add').onclick = async () => {
+        const n = $('#tm-name').value.trim();
+        if(!n) return;
+        if((state.project.team || []).includes(n)){ toast('มีชื่อนี้อยู่แล้ว'); return; }
+        try{
+          const { error } = await sb.from('project_team').insert({ project_id: state.pid, name:n });
+          if(error) throw error;
+          state.project.team = [...(state.project.team || []), n];
+          render();
+        }catch(err){ toast('บันทึกรายชื่อไม่สำเร็จ'); }
+      };
+      $('#tm-name').onkeydown = e => { if(e.key === 'Enter') $('#tm-add').click(); };
+      document.querySelectorAll('[data-rm]').forEach(b => {
+        b.onclick = async () => {
+          try{
+            const { error } = await sb.from('project_team').delete().eq('project_id', state.pid).eq('name', b.dataset.rm);
+            if(error) throw error;
+            state.project.team = (state.project.team || []).filter(x => x !== b.dataset.rm);
+            render();
+          }catch(err){ toast('ลบไม่สำเร็จ'); }
+        };
+      });
+    };
+    render();
+  }
+
+  /* ============ realtime + fallback polling ============ */
+  let dashChannel = null, mapChannel = null;
+
+  function subscribeDash(){
+    unsubscribeDash();
+    dashChannel = sb.channel('projects-changes')
+      .on('postgres_changes', { event:'*', schema:'public', table:'projects' }, () => { if(!state.blocked) loadProjects(); })
+      .on('postgres_changes', { event:'*', schema:'public', table:'checkpoints' }, () => { if(!state.blocked) loadProjects(); })
+      .subscribe();
+  }
+  function unsubscribeDash(){ if(dashChannel){ sb.removeChannel(dashChannel); dashChannel = null; } }
+
+  function subscribeMap(pid){
+    unsubscribeMap();
+    mapChannel = sb.channel('project-' + pid)
+      .on('postgres_changes', { event:'*', schema:'public', table:'checkpoints', filter:'project_id=eq.' + pid }, () => { if(!state.blocked) loadProject(true); })
+      .subscribe();
+  }
+  function unsubscribeMap(){ if(mapChannel){ sb.removeChannel(mapChannel); mapChannel = null; } }
+
+  /* realtime เป็นตัวหลัก โพลนี้เป็นแค่ fallback เผื่อ channel หลุดเงียบ ๆ */
+  function startPoll(){
+    stopPoll();
+    state.poll = setInterval(async () => {
+      if(state.blocked) return;
+      if(document.hidden) return;
+      try{
+        if(state.view === 'dash') await loadProjects();
+        else if(state.view === 'map') await loadProject(true);
+      }catch(e){ /* เงียบไว้ ปล่อยรอบถัดไป */ }
+    }, 30000);
+  }
+  function stopPoll(){ if(state.poll) clearInterval(state.poll); state.poll = null; }
+
+  /* ============ wiring ============ */
+  $('#btn-new-project').onclick = newProjectModal;
+  $('#dash-refresh').onclick = () => loadProjects();
+  $('#map-refresh').onclick = () => loadProject(true);
+  $('#btn-new-cp').onclick = () => openEditor(null, null);
+  $('#btn-team').onclick = teamModal;
+  $('#btn-back').onclick = async () => {
+    closeOverlays();
+    unsubscribeMap();
+    stopPoll();
+    show('dash');
+    await loadProjects();
+    subscribeDash();
+    startPoll();
+  };
+  $('#err-retry').onclick = boot;
+  window.addEventListener('resize', () => { if(state.view === 'map') applyView(); });
+  document.fonts && document.fonts.ready.then(() => { if(state.view === 'map') renderMap(); });
+
+  /* ============ auth ============ */
+  function authError(msg){
+    const el = $('#auth-err');
+    el.textContent = msg;
+    el.style.display = '';
+  }
+  async function doAuth(kind){
+    const email = $('#auth-email').value.trim();
+    const password = $('#auth-password').value;
+    $('#auth-err').style.display = 'none';
+    if(!email || !password){ authError('กรอกอีเมลและรหัสผ่าน'); return; }
+    try{
+      const { error } = kind === 'signup'
+        ? await sb.auth.signUp({ email, password })
+        : await sb.auth.signInWithPassword({ email, password });
+      if(error) throw error;
+      if(kind === 'signup') toast('สมัครสำเร็จ ตรวจอีเมลเพื่อยืนยัน (ถ้าจำเป็น) แล้วเข้าสู่ระบบ');
+      /* ถ้ามี session แล้ว onAuthStateChange ด้านล่างจะพาเข้าแอปให้เอง */
+    }catch(err){ authError(err.message || 'เข้าสู่ระบบไม่สำเร็จ'); }
+  }
+  $('#auth-signin').onclick = () => doAuth('signin');
+  $('#auth-signup').onclick = () => doAuth('signup');
+  $('#auth-password').onkeydown = e => { if(e.key === 'Enter') $('#auth-signin').click(); };
+
+  async function doSignOut(){
+    unsubscribeDash();
+    unsubscribeMap();
+    stopPoll();
+    await sb.auth.signOut();
+  }
+  $('#dash-signout').onclick = doSignOut;
+  $('#map-signout').onclick = doSignOut;
+
+  async function enterApp(){
+    try{
+      await loadProjects();
+      show('dash');
+      subscribeDash();
+      startPoll();
+    }catch(err){
+      show('error');
+      $('#err-msg').textContent = 'อ่านข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง (' + (err && err.message ? err.message : 'unknown') + ')';
+    }
+  }
+
+  let authReady = false;
+  sb.auth.onAuthStateChange((event, session) => {
+    state.user = session ? session.user : null;
+    if(session){
+      if(state.view === 'auth' || state.view === 'loading') enterApp();
+    }else if(authReady){
+      unsubscribeDash();
+      unsubscribeMap();
+      stopPoll();
+      show('auth');
+    }
+    authReady = true;
+  });
+
+  /* ============ boot ============ */
+  async function boot(){
+    show('loading');
+    const { data: { session } } = await sb.auth.getSession();
+    state.user = session ? session.user : null;
+    if(session) await enterApp();
+    else show('auth');
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
