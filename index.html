@@ -120,6 +120,16 @@
   .empty h3{font-size:17px;font-weight:600}
   .empty p{color:var(--ink-2);font-size:13px;margin:6px 0 18px}
 
+  .task-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .task-row{
+    display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);
+    border-radius:8px;padding:10px 14px;cursor:pointer;transition:border-color var(--t);
+  }
+  .task-row:hover{border-color:var(--accent)}
+  .task-row .sdot{width:8px;height:8px;border-radius:50%;flex:none}
+  .task-row .t-title{flex:1;font-size:13px;font-weight:500}
+  .task-row .t-proj{font-size:11px;color:var(--ink-3);white-space:nowrap}
+
   .foot-note{
     text-align:center;font-size:12px;color:var(--ink-3);
     margin-top:32px;padding-top:20px;border-top:1px solid var(--line);
@@ -384,6 +394,13 @@
       <div class="eyebrow">Sign in</div>
       <h2 style="font-size:18px;font-weight:600">เข้าสู่ระบบ</h2>
       <p class="muted" style="max-width:320px">ล็อกอินด้วยอีเมลเพื่อเข้าถึง shared workspace ของทีม</p>
+      <button class="btn" id="auth-google" style="width:100%;max-width:300px;justify-content:center">
+        <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.1-2 13.7-5.4l-6.3-5.3C29.4 35 26.8 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.3 5.3C39.5 37 44 31 44 24c0-1.2-.1-2.4-.4-3.5z"/></svg>
+        เข้าสู่ระบบด้วย Google <span class="en">Sign in with Google</span>
+      </button>
+      <div class="muted" style="display:flex;align-items:center;gap:10px;width:100%;max-width:300px">
+        <span style="flex:1;height:1px;background:var(--line)"></span>หรือ · or<span style="flex:1;height:1px;background:var(--line)"></span>
+      </div>
       <div class="field" style="width:100%;max-width:300px;text-align:left">
         <label for="auth-email">อีเมล <span class="en">Email</span></label>
         <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="username" />
@@ -422,6 +439,7 @@
           <h1>ติดตามความคืบหน้า</h1>
           <p>ทุกคนในทีมที่ล็อกอินเห็นและแก้ไขข้อมูลชุดเดียวกัน — shared workspace, real-time sync.</p>
         </div>
+        <div id="my-tasks" hidden style="margin-bottom:28px"></div>
         <div id="dash-content"></div>
         <div class="foot-note">
           ข้อมูลนี้เป็นแบบ <b>shared</b> — ทุกคนที่ล็อกอินเข้าแอปนี้เห็นและแก้ไขร่วมกันได้
@@ -495,7 +513,7 @@
     <div class="field">
       <label for="f-assignee">ผู้รับผิดชอบ <span class="en">Assignee</span></label>
       <select id="f-assignee"></select>
-      <div class="muted" style="margin-top:6px">เพิ่มรายชื่อได้ที่ปุ่ม “ทีม” ด้านบน</div>
+      <div class="muted" style="margin-top:6px">เพิ่มอีเมลได้ที่ปุ่ม “ทีม” ด้านบน</div>
     </div>
     <div class="field">
       <label for="f-note">หมายเหตุ <span class="en">Note</span></label>
@@ -719,6 +737,44 @@
     stamp('#dash-sync');
   }
 
+  /* งานที่ล็อกอินอยู่ถูก assign ให้ ข้ามทุกโปรเจกต์ (จับคู่ด้วยอีเมล ใช้ได้ทั้ง email/password และ Google) */
+  async function loadMyTasks(){
+    if(!state.user || !state.user.email) return [];
+    const { data, error } = await sb.from('checkpoints')
+      .select('id,title,status,project_id,projects(name)')
+      .eq('assignee', state.user.email)
+      .order('created_at');
+    return error ? [] : (data || []);
+  }
+
+  function renderMyTasks(items){
+    const box = $('#my-tasks');
+    if(!items.length){ box.hidden = true; box.innerHTML = ''; return; }
+    box.hidden = false;
+    box.innerHTML = `
+      <div class="eyebrow">Assigned to me</div>
+      <strong style="font-weight:600">งานที่ได้รับมอบหมาย</strong>
+      <div class="task-list">
+        ${items.map(t => {
+          const st = STATUS[t.status] || STATUS.todo;
+          return `
+            <div class="task-row" data-pid="${esc(t.project_id)}">
+              <span class="sdot" style="background:${st.color}"></span>
+              <span class="t-title">${esc(t.title)}</span>
+              <span class="t-proj">${esc(t.projects ? t.projects.name : '')}</span>
+            </div>`;
+        }).join('')}
+      </div>`;
+    box.querySelectorAll('.task-row').forEach(row => {
+      row.onclick = () => openProject(row.dataset.pid);
+    });
+  }
+
+  async function refreshDash(){
+    const [, myTasks] = await Promise.all([loadProjects(), loadMyTasks()]);
+    renderMyTasks(myTasks);
+  }
+
   function stamp(sel){ $(sel).textContent = 'อัพเดตล่าสุด ' + fmtTime(Date.now()); }
 
   function renderDash(items){
@@ -767,7 +823,7 @@
               const { error } = await sb.from('projects').delete().eq('id', p.id); // cascades checkpoints + team
               if(error) throw error;
               toast('ลบโปรเจกต์แล้ว · Deleted');
-              await loadProjects();
+              await refreshDash();
             }catch(err){ toast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง'); }
           }
         });
@@ -1151,9 +1207,9 @@
       openModal(
         `<div class="eyebrow">Team members</div>
          <h2>สมาชิกทีม</h2>
-         <p>รายชื่อนี้ใช้เป็นตัวเลือก “ผู้รับผิดชอบ” ของโปรเจกต์นี้</p>
+         <p>เพิ่มอีเมล (Gmail) ของทีม — คนที่ล็อกอินด้วยอีเมลนี้จะเห็น checkpoint ที่มอบหมายให้เขาในหน้าแรกของเขาเองด้วย</p>
          <div class="row">
-           <input type="text" id="tm-name" maxlength="40" placeholder="ชื่อสมาชิก · Name" />
+           <input type="email" id="tm-name" maxlength="60" placeholder="อีเมล (Gmail) · Email" />
            <button class="btn btn-primary" id="tm-add">เพิ่ม</button>
          </div>
          <div class="team-list">
@@ -1165,9 +1221,10 @@
         [{ label:'เสร็จสิ้น <span class="en">Done</span>', kind:'primary', onClick: () => { closeOverlays(); renderMap(); } }]
       );
       $('#tm-add').onclick = async () => {
-        const n = $('#tm-name').value.trim();
+        const n = $('#tm-name').value.trim().toLowerCase();
         if(!n) return;
-        if((state.project.team || []).includes(n)){ toast('มีชื่อนี้อยู่แล้ว'); return; }
+        if(!n.includes('@') || !n.includes('.')){ toast('ใส่อีเมลให้ถูกต้อง เช่น name@gmail.com'); return; }
+        if((state.project.team || []).includes(n)){ toast('มีอีเมลนี้อยู่แล้ว'); return; }
         try{
           const { error } = await sb.from('project_team').insert({ project_id: state.pid, name:n });
           if(error) throw error;
@@ -1196,8 +1253,8 @@
   function subscribeDash(){
     unsubscribeDash();
     dashChannel = sb.channel('projects-changes')
-      .on('postgres_changes', { event:'*', schema:'public', table:'projects' }, () => { if(!state.blocked) loadProjects(); })
-      .on('postgres_changes', { event:'*', schema:'public', table:'checkpoints' }, () => { if(!state.blocked) loadProjects(); })
+      .on('postgres_changes', { event:'*', schema:'public', table:'projects' }, () => { if(!state.blocked) refreshDash(); })
+      .on('postgres_changes', { event:'*', schema:'public', table:'checkpoints' }, () => { if(!state.blocked) refreshDash(); })
       .subscribe();
   }
   function unsubscribeDash(){ if(dashChannel){ sb.removeChannel(dashChannel); dashChannel = null; } }
@@ -1217,7 +1274,7 @@
       if(state.blocked) return;
       if(document.hidden) return;
       try{
-        if(state.view === 'dash') await loadProjects();
+        if(state.view === 'dash') await refreshDash();
         else if(state.view === 'map') await loadProject(true);
       }catch(e){ /* เงียบไว้ ปล่อยรอบถัดไป */ }
     }, 30000);
@@ -1226,7 +1283,7 @@
 
   /* ============ wiring ============ */
   $('#btn-new-project').onclick = newProjectModal;
-  $('#dash-refresh').onclick = () => loadProjects();
+  $('#dash-refresh').onclick = () => refreshDash();
   $('#map-refresh').onclick = () => loadProject(true);
   $('#btn-new-cp').onclick = () => openEditor(null, null);
   $('#btn-team').onclick = teamModal;
@@ -1235,7 +1292,7 @@
     unsubscribeMap();
     stopPoll();
     show('dash');
-    await loadProjects();
+    await refreshDash();
     subscribeDash();
     startPoll();
   };
@@ -1267,6 +1324,13 @@
   $('#auth-signup').onclick = () => doAuth('signup');
   $('#auth-password').onkeydown = e => { if(e.key === 'Enter') $('#auth-signin').click(); };
   $('#auth-back').onclick = () => show('landing');
+  $('#auth-google').onclick = async () => {
+    try{
+      const { error } = await sb.auth.signInWithOAuth({ provider:'google' });
+      if(error) throw error;
+      /* จากนี้เบราว์เซอร์จะเด้งไป Google แล้วกลับมา onAuthStateChange จะรับ session เอง */
+    }catch(err){ authError(err.message || 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ'); }
+  };
 
   /* ============ landing page ============ */
   $('#landing-cta').onclick = () => show('auth');
@@ -1355,7 +1419,7 @@
 
   async function enterApp(){
     try{
-      await loadProjects();
+      await refreshDash();
       show('dash');
       subscribeDash();
       startPoll();
