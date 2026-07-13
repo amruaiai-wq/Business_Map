@@ -242,6 +242,60 @@
     opacity:0;pointer-events:none;transition:opacity var(--t),transform var(--t);
   }
   .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  /* ---------- landing ---------- */
+  .landing-wrap{flex:1;overflow-y:auto}
+  .landing-inner{max-width:760px;margin:0 auto;padding:56px 24px 80px;text-align:center}
+  .landing-inner h1{font-size:32px;font-weight:600;letter-spacing:-.01em;margin-top:10px}
+  .landing-inner .lead{color:var(--ink-2);font-size:15px;margin:14px auto 28px;max-width:520px}
+  .landing-cta{display:flex;gap:10px;justify-content:center;margin-bottom:44px}
+
+  .story{
+    position:relative;height:280px;background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);overflow:hidden;margin-bottom:12px;
+  }
+  .story-frame{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:14px;padding:24px;opacity:0;transition:opacity 500ms ease;pointer-events:none;
+  }
+  .story-frame.on{opacity:1}
+  .story-dots{display:flex;gap:6px;justify-content:center;margin-bottom:32px}
+  .story-dots span{width:6px;height:6px;border-radius:50%;background:var(--line-soft)}
+  .story-dots span.on{background:var(--accent)}
+
+  .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:8px;text-align:left}
+  .feat-grid .card{cursor:default}
+  .feat-grid .card:hover{border-color:var(--line)}
+  .feat-grid h4{font-size:14px;font-weight:600;margin-bottom:4px}
+  .feat-grid p{font-size:12px;color:var(--ink-2)}
+
+  /* ---------- template picker ---------- */
+  .tpl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px;max-height:260px;overflow-y:auto}
+  .tpl-card{
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;text-align:left;
+    display:flex;flex-direction:column;gap:2px;transition:border-color var(--t),background var(--t);
+  }
+  .tpl-card:hover{border-color:var(--ink-3)}
+  .tpl-card[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}
+  .tpl-card b{font-size:13px}
+  .tpl-card span{font-size:11px;color:var(--ink-3)}
+
+  /* ---------- guided tour ---------- */
+  .tour-spot{
+    position:fixed;z-index:80;border-radius:10px;
+    box-shadow:0 0 0 4000px rgba(23,23,23,.45);
+    opacity:0;pointer-events:none;transition:opacity var(--t),top var(--t),left var(--t),width var(--t),height var(--t);
+  }
+  .tour-spot.on{opacity:1}
+  .tour-tip{
+    position:fixed;z-index:81;max-width:260px;background:var(--surface);border-radius:10px;
+    padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.18);
+    opacity:0;pointer-events:none;transition:opacity var(--t);
+  }
+  .tour-tip.on{opacity:1;pointer-events:auto}
+  .tour-tip p{font-size:13px;color:var(--ink-2);margin:6px 0 12px}
+  .tour-tip .row{justify-content:space-between;align-items:center}
+
   @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -266,9 +320,67 @@
     </div>
   </div>
 
+  <!-- LANDING -->
+  <div class="view" id="v-landing">
+    <div class="landing-wrap">
+      <div class="landing-inner">
+        <div class="eyebrow">Project Mind Map</div>
+        <h1>ติดตามความคืบหน้าโปรเจกต์แบบเห็นภาพรวม</h1>
+        <p class="lead">สร้างโปรเจกต์ แตก checkpoint เป็นแผนผังความคิด แชร์กับทีมแบบเรียลไทม์ — เริ่มจากเทมเพลตธุรกิจสำเร็จรูป หรือเริ่มจากศูนย์ก็ได้</p>
+        <div class="landing-cta">
+          <button class="btn btn-primary" id="landing-cta">เริ่มต้นใช้งาน <span class="en">Get started</span></button>
+        </div>
+
+        <div class="story" id="story">
+          <div class="story-frame on" data-frame="0">
+            <div class="eyebrow">Step 1</div>
+            <div style="font-weight:600">เพิ่มโปรเจกต์แรกของคุณ</div>
+            <button class="btn btn-primary btn-sm" style="pointer-events:none">+ เพิ่มโปรเจกต์</button>
+          </div>
+          <div class="story-frame" data-frame="1">
+            <div class="eyebrow">Step 2</div>
+            <div style="font-weight:600">ตั้งชื่อ หรือเลือกเทมเพลตธุรกิจ</div>
+            <div class="field" style="width:220px;pointer-events:none"><input type="text" value="ร้านกาแฟสาขาใหม่" readonly /></div>
+          </div>
+          <div class="story-frame" data-frame="2">
+            <div class="eyebrow">Step 3</div>
+            <div style="font-weight:600">ได้แผนผังความคิดพร้อมใช้งานทันที</div>
+            <div style="width:64px;height:64px;border-radius:50%;border:1.25px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">MAP</div>
+          </div>
+          <div class="story-frame" data-frame="3">
+            <div class="eyebrow">Step 4</div>
+            <div style="font-weight:600">กด + เพื่อเพิ่ม checkpoint แล้วใส่รายละเอียด</div>
+            <button class="btn btn-sm" style="pointer-events:none">+ เพิ่ม checkpoint</button>
+          </div>
+          <div class="story-frame" data-frame="4">
+            <div class="eyebrow">Step 5</div>
+            <div style="font-weight:600">ติดตามสถานะและแชร์กับทีมแบบเรียลไทม์</div>
+            <div style="display:flex;gap:6px">
+              <span style="width:8px;height:8px;border-radius:50%;background:#A3A3A3"></span>
+              <span style="width:8px;height:8px;border-radius:50%;background:#4F46E5"></span>
+              <span style="width:8px;height:8px;border-radius:50%;background:#16A34A"></span>
+            </div>
+          </div>
+        </div>
+        <div class="story-dots" id="story-dots"></div>
+
+        <div class="feat-grid">
+          <div class="card"><h4>🧭 เทมเพลตธุรกิจ</h4><p>เริ่มจากเว็บไซต์ ร้านน้ำ ร้านกาแฟ หอพัก และอื่น ๆ ไม่ต้องเริ่มนับหนึ่งเอง</p></div>
+          <div class="card"><h4>⚡ เรียลไทม์</h4><p>ทีมเห็นความเปลี่ยนแปลงทันที ไม่ต้องรีเฟรชเอง</p></div>
+          <div class="card"><h4>🗺️ Mind map</h4><p>มองเห็นภาพรวมและลำดับงานย่อยได้ในหน้าเดียว</p></div>
+        </div>
+
+        <div class="landing-cta" style="margin-top:36px">
+          <button class="btn btn-primary" id="landing-cta-2">เริ่มต้นใช้งาน <span class="en">Get started</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- AUTH -->
   <div class="view" id="v-auth">
     <div class="state">
+      <button class="btn btn-ghost btn-sm" id="auth-back">← กลับ <span class="en">Back</span></button>
       <div class="eyebrow">Sign in</div>
       <h2 style="font-size:18px;font-weight:600">เข้าสู่ระบบ</h2>
       <p class="muted" style="max-width:320px">ล็อกอินด้วยอีเมลเพื่อเข้าถึง shared workspace ของทีม</p>
@@ -300,6 +412,7 @@
         <span class="sync-time" id="dash-sync">—</span>
         <button class="btn btn-sm" id="dash-refresh">รีเฟรช <span class="en">Sync</span></button>
       </div>
+      <button class="btn btn-ghost btn-sm" id="dash-tour-btn">วิธีใช้งาน <span class="en">How to</span></button>
       <button class="btn btn-ghost btn-sm" id="dash-signout">ออกจากระบบ <span class="en">Sign out</span></button>
       <button class="btn btn-primary btn-sm" id="btn-new-project">+ เพิ่มโปรเจกต์</button>
     </div>
@@ -403,6 +516,10 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- GUIDED TOUR -->
+<div class="tour-spot" id="tour-spot"></div>
+<div class="tour-tip" id="tour-tip"></div>
+
 <script>
 (() => {
   'use strict';
@@ -426,6 +543,82 @@
   };
   const fmtDate = ts => new Date(ts).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});
   const fmtTime = ts => new Date(ts).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+
+  /* ============ project templates ============ */
+  const TEMPLATES = {
+    website: { label:'เว็บไซต์', emoji:'🌐', tree:[
+      { title:'วางแผน (Discovery)' },
+      { title:'ออกแบบ (Design)', children:[ {title:'Wireframe'}, {title:'UI Design'} ] },
+      { title:'พัฒนา (Development)', children:[ {title:'Frontend'}, {title:'Backend'}, {title:'เชื่อมต่อฐานข้อมูล'} ] },
+      { title:'ทดสอบ (QA)' },
+      { title:'เปิดตัว (Deploy)' },
+      { title:'ดูแลหลังเปิดตัว (Maintenance)' }
+    ]},
+    drink_shop: { label:'ร้านน้ำ', emoji:'🥤', tree:[
+      { title:'หาทำเล' },
+      { title:'ออกแบบเมนู', children:[ {title:'เมนูเครื่องดื่ม'}, {title:'ราคาขาย'} ] },
+      { title:'จัดหาวัตถุดิบ/ซัพพลายเออร์' },
+      { title:'ตกแต่งร้าน/อุปกรณ์' },
+      { title:'จดทะเบียน/ใบอนุญาต' },
+      { title:'จ้าง/ฝึกพนักงาน' },
+      { title:'ระบบ POS/บัญชี' },
+      { title:'เปิดร้าน', children:[ {title:'Soft opening'}, {title:'Grand opening'} ] }
+    ]},
+    coffee_shop: { label:'ร้านกาแฟ', emoji:'☕', tree:[
+      { title:'หาทำเล' },
+      { title:'ออกแบบร้าน (Interior)' },
+      { title:'เครื่องชง/อุปกรณ์', children:[ {title:'เครื่องชงกาแฟ'}, {title:'เครื่องบดเมล็ด'} ] },
+      { title:'คัดสรรเมล็ดกาแฟ/ซัพพลายเออร์' },
+      { title:'ออกแบบเมนู' },
+      { title:'จ้าง/ฝึก Barista' },
+      { title:'จดทะเบียนธุรกิจ' },
+      { title:'การตลาด/เปิดร้าน' }
+    ]},
+    dorm: { label:'ระบบหอพัก', emoji:'🏢', tree:[
+      { title:'สำรวจห้อง/ผังหอ' },
+      { title:'ตั้งราคาค่าเช่า' },
+      { title:'ระบบสัญญาเช่า' },
+      { title:'เก็บค่าน้ำค่าไฟ' },
+      { title:'ระบบแจ้งซ่อม' },
+      { title:'รับสมัคร/ย้ายเข้าย้ายออก' },
+      { title:'การตลาดหาผู้เช่า' },
+      { title:'ความปลอดภัย', children:[ {title:'กล้องวงจรปิด'}, {title:'กุญแจ/คีย์การ์ด'} ] }
+    ]},
+    billing: { label:'ระบบเก็บเงิน', emoji:'💵', tree:[
+      { title:'กำหนดรายการที่เก็บเงิน' },
+      { title:'ออกแบบใบแจ้งหนี้' },
+      { title:'แจ้งเตือนก่อนครบกำหนด' },
+      { title:'ช่องทางชำระเงิน', children:[ {title:'โอนเงิน'}, {title:'QR พร้อมเพย์'}, {title:'บัตรเครดิต'} ] },
+      { title:'บันทึกการชำระ' },
+      { title:'ติดตามค้างชำระ' },
+      { title:'รายงานสรุป' }
+    ]},
+    storybook: { label:'สร้างนิทาน', emoji:'📖', tree:[
+      { title:'คิดโครงเรื่อง (Plot)' },
+      { title:'พัฒนาตัวละคร' },
+      { title:'เขียนบท', children:[ {title:'ตอนที่ 1'}, {title:'ตอนที่ 2'} ] },
+      { title:'วาดภาพประกอบ' },
+      { title:'ออกแบบเลย์เอาต์หนังสือ' },
+      { title:'พิสูจน์อักษร/ตรวจทาน' },
+      { title:'จัดพิมพ์/เผยแพร่' },
+      { title:'ประชาสัมพันธ์' }
+    ]}
+  };
+
+  async function applyTemplate(pid, key){
+    const tpl = TEMPLATES[key];
+    if(!tpl) return;
+    async function insertLevel(nodes, parentId){
+      for(const n of nodes){
+        const { data, error } = await sb.from('checkpoints')
+          .insert({ project_id: pid, parent_id: parentId, title:n.title, status:'todo', assignee:'', note:'' })
+          .select().single();
+        if(error) continue; // node เดียวพังไม่ควรทำให้ทั้งเทมเพลตล้ม
+        if(n.children && n.children.length) await insertLevel(n.children, data.id);
+      }
+    }
+    await insertLevel(tpl.tree, null);
+  }
 
   let toastT;
   function toast(msg){
@@ -583,11 +776,25 @@
   }
 
   function newProjectModal(){
+    let selectedTpl = 'blank';
+    const tplEntries = Object.entries(TEMPLATES);
+    const tplGrid = `
+      <div class="tpl-grid" id="tpl-grid">
+        <button type="button" class="tpl-card" data-tpl="blank" aria-pressed="true">
+          <b>⬜️ ว่างเปล่า</b><span>เริ่มจากศูนย์</span>
+        </button>
+        ${tplEntries.map(([k,t]) => `
+          <button type="button" class="tpl-card" data-tpl="${k}" aria-pressed="false">
+            <b>${t.emoji} ${esc(t.label)}</b><span>${t.tree.length} checkpoint เริ่มต้น</span>
+          </button>`).join('')}
+      </div>`;
+
     openModal(
       `<div class="eyebrow">New project</div>
        <h2>เพิ่มโปรเจกต์</h2>
-       <p>ตั้งชื่อโปรเจกต์ที่ทีมจะใช้ร่วมกัน</p>
-       <div class="field"><input type="text" id="np-name" maxlength="80" placeholder="เช่น เปิดตัวเว็บไซต์ Q3" /></div>`,
+       <p>ตั้งชื่อโปรเจกต์ แล้วเลือกเทมเพลตเริ่มต้นได้ (ไม่เลือกก็เริ่มจากศูนย์ได้)</p>
+       <div class="field"><input type="text" id="np-name" maxlength="80" placeholder="เช่น เปิดตัวเว็บไซต์ Q3" /></div>
+       ${tplGrid}`,
       [
         { label:'ยกเลิก <span class="en">Cancel</span>', onClick: closeOverlays },
         { label:'สร้าง <span class="en">Create</span>', kind:'primary', onClick: async () => {
@@ -596,6 +803,7 @@
             try{
               const { data, error } = await sb.from('projects').insert({ name, created_by: state.user ? state.user.id : null }).select().single();
               if(error) throw error;
+              if(selectedTpl !== 'blank') await applyTemplate(data.id, selectedTpl);
               closeOverlays();
               toast('สร้างโปรเจกต์แล้ว · Created');
               openProject(data.id);
@@ -606,6 +814,12 @@
     );
     const inp = $('#np-name');
     inp.onkeydown = e => { if(e.key === 'Enter') $('#modal-foot button:last-child').click(); };
+    $('#tpl-grid').querySelectorAll('[data-tpl]').forEach(b => {
+      b.onclick = () => {
+        selectedTpl = b.dataset.tpl;
+        $('#tpl-grid').querySelectorAll('[data-tpl]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tpl === selectedTpl)));
+      };
+    });
   }
 
   /* ============ mind map ============ */
@@ -817,6 +1031,7 @@
     await loadProject(false);
     subscribeMap(id);
     startPoll();
+    maybeRunTour(TOUR_MAP, 'tour_map_seen');
   }
 
   /* ============ editor panel ============ */
@@ -1051,6 +1266,83 @@
   $('#auth-signin').onclick = () => doAuth('signin');
   $('#auth-signup').onclick = () => doAuth('signup');
   $('#auth-password').onkeydown = e => { if(e.key === 'Enter') $('#auth-signin').click(); };
+  $('#auth-back').onclick = () => show('landing');
+
+  /* ============ landing page ============ */
+  $('#landing-cta').onclick = () => show('auth');
+  $('#landing-cta-2').onclick = () => show('auth');
+  (function initStory(){
+    const frames = document.querySelectorAll('.story-frame');
+    const dotsWrap = $('#story-dots');
+    frames.forEach((_, i) => {
+      const d = document.createElement('span');
+      if(i === 0) d.className = 'on';
+      dotsWrap.appendChild(d);
+    });
+    let i = 0;
+    setInterval(() => {
+      frames[i].classList.remove('on');
+      dotsWrap.children[i].classList.remove('on');
+      i = (i + 1) % frames.length;
+      frames[i].classList.add('on');
+      dotsWrap.children[i].classList.add('on');
+    }, 3000);
+  })();
+
+  /* ============ guided tour ============ */
+  const TOUR_DASH = [
+    { sel:'#btn-new-project', title:'เริ่มต้นที่นี่', text:'กดปุ่มนี้เพื่อสร้างโปรเจกต์แรกของคุณ เลือกเทมเพลตธุรกิจได้เลยถ้าไม่อยากเริ่มจากศูนย์' },
+    { sel:'#dash-content', title:'รายการโปรเจกต์ของทีม', text:'ทุกโปรเจกต์จะอยู่ที่นี่พร้อมแถบความคืบหน้า กดที่การ์ดเพื่อเปิด mind map' },
+    { sel:'#dash-refresh', title:'ข้อมูลเรียลไทม์', text:'ข้อมูลซิงก์กับทีมอัตโนมัติอยู่แล้ว กดปุ่มนี้ได้ถ้าอยากรีเฟรชด้วยตัวเอง' }
+  ];
+  const TOUR_MAP = [
+    { sel:'#btn-new-cp', title:'เพิ่ม checkpoint', text:'กดเพื่อเพิ่ม checkpoint แรกของโปรเจกต์นี้ แล้วใส่สถานะ ผู้รับผิดชอบ และหมายเหตุได้เลย' },
+    { sel:'[data-add]', title:'แตกกิ่งย่อย', text:'กด + ข้าง checkpoint ไหนก็ได้ เพื่อเพิ่ม sub-checkpoint ใต้อันนั้น' },
+    { sel:'#btn-team', title:'จัดการทีม', text:'เพิ่มรายชื่อผู้รับผิดชอบที่นี่ แล้วเลือกได้ตอนแก้ไข checkpoint' }
+  ];
+
+  function tourStep(steps, i, flagKey){
+    const spot = $('#tour-spot'), tip = $('#tour-tip');
+    if(i >= steps.length){
+      localStorage.setItem(flagKey, '1');
+      spot.classList.remove('on');
+      tip.classList.remove('on');
+      return;
+    }
+    const step = steps[i];
+    const el = document.querySelector(step.sel);
+    if(!el){ tourStep(steps, i + 1, flagKey); return; }
+    const r = el.getBoundingClientRect();
+    const pad = 6;
+    spot.style.top = (r.top - pad) + 'px';
+    spot.style.left = (r.left - pad) + 'px';
+    spot.style.width = (r.width + pad * 2) + 'px';
+    spot.style.height = (r.height + pad * 2) + 'px';
+    spot.classList.add('on');
+
+    tip.innerHTML = `<b style="font-size:13px;font-weight:600">${esc(step.title)}</b><p>${esc(step.text)}</p>
+      <div class="row" style="display:flex">
+        <button class="btn btn-ghost btn-sm" id="tour-skip">ข้าม <span class="en">Skip</span></button>
+        <button class="btn btn-primary btn-sm" id="tour-next">${i === steps.length - 1 ? 'เสร็จสิ้น' : 'ถัดไป'}</button>
+      </div>`;
+    const top = Math.min(r.bottom + 12, window.innerHeight - 160);
+    const left = clamp(r.left, 12, window.innerWidth - 272);
+    tip.style.top = top + 'px';
+    tip.style.left = left + 'px';
+    tip.classList.add('on');
+
+    $('#tour-next').onclick = () => tourStep(steps, i + 1, flagKey);
+    $('#tour-skip').onclick = () => {
+      localStorage.setItem(flagKey, '1');
+      spot.classList.remove('on');
+      tip.classList.remove('on');
+    };
+  }
+  function maybeRunTour(steps, flagKey, force){
+    if(!force && localStorage.getItem(flagKey)) return;
+    setTimeout(() => tourStep(steps, 0, flagKey), 400);
+  }
+  $('#dash-tour-btn').onclick = () => maybeRunTour(TOUR_DASH, 'tour_dash_seen', true);
 
   async function doSignOut(){
     unsubscribeDash();
@@ -1067,6 +1359,7 @@
       show('dash');
       subscribeDash();
       startPoll();
+      maybeRunTour(TOUR_DASH, 'tour_dash_seen');
     }catch(err){
       show('error');
       $('#err-msg').textContent = 'อ่านข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง (' + (err && err.message ? err.message : 'unknown') + ')';
@@ -1077,7 +1370,7 @@
   sb.auth.onAuthStateChange((event, session) => {
     state.user = session ? session.user : null;
     if(session){
-      if(state.view === 'auth' || state.view === 'loading') enterApp();
+      if(['auth','loading','landing'].includes(state.view)) enterApp();
     }else if(authReady){
       unsubscribeDash();
       unsubscribeMap();
@@ -1093,7 +1386,7 @@
     const { data: { session } } = await sb.auth.getSession();
     state.user = session ? session.user : null;
     if(session) await enterApp();
-    else show('auth');
+    else show('landing');
   }
   boot();
 })();
