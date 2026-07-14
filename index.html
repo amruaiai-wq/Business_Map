@@ -595,19 +595,24 @@
     ]}
   };
 
-  async function applyTemplate(pid, key){
-    const tpl = TEMPLATES[key];
-    if(!tpl) return;
+  /* เดินต้นไม้ {title, children:[]} แล้ว insert เป็น checkpoint จริง ใช้ร่วมกันทั้งเทมเพลตสำเร็จรูปและต้นไม้ที่ AI สร้างให้ */
+  async function insertTree(pid, tree){
     async function insertLevel(nodes, parentId){
       for(const n of nodes){
         const { data, error } = await sb.from('checkpoints')
           .insert({ project_id: pid, parent_id: parentId, title:n.title, status:'todo', assignee:'', note:'' })
           .select().single();
-        if(error) continue; // node เดียวพังไม่ควรทำให้ทั้งเทมเพลตล้ม
+        if(error) continue; // node เดียวพังไม่ควรทำให้ทั้งต้นไม้ล้ม
         if(n.children && n.children.length) await insertLevel(n.children, data.id);
       }
     }
-    await insertLevel(tpl.tree, null);
+    await insertLevel(tree, null);
+  }
+
+  async function applyTemplate(pid, key){
+    const tpl = TEMPLATES[key];
+    if(!tpl) return;
+    await insertTree(pid, tpl.tree);
   }
 
   /* ============ guest sandbox (no login, in-memory only) ============ */
@@ -842,6 +847,7 @@
 
   function newProjectModal(){
     let selectedTpl = 'blank';
+    let aiTree = null;
     const tplEntries = Object.entries(TEMPLATES);
     const tplGrid = `
       <div class="tpl-grid" id="tpl-grid">
@@ -854,12 +860,24 @@
           </button>`).join('')}
       </div>`;
 
+    /* โหมดทดลองไม่มี session ให้ยิงเข้า Edge Function ได้ เลยซ่อนตัวเลือก AI ไปเลย */
+    const aiSection = state.demo ? '' : `
+      <div class="field" style="margin-top:16px">
+        <label>✨ Premium — ให้ AI ช่วยสร้าง <span class="en">AI generate</span></label>
+        <textarea id="ai-prompt" maxlength="300" placeholder="อธิบายธุรกิจหรือโปรเจกต์สั้น ๆ เช่น ร้านเบเกอรี่โฮมเมดเปิดใหม่แถวมหาวิทยาลัย" style="min-height:56px"></textarea>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+          <button type="button" class="btn btn-sm" id="ai-generate">สร้างด้วย AI</button>
+          <span class="muted" id="ai-status"></span>
+        </div>
+      </div>`;
+
     openModal(
       `<div class="eyebrow">New project</div>
        <h2>เพิ่มโปรเจกต์</h2>
        <p>ตั้งชื่อโปรเจกต์ แล้วเลือกเทมเพลตเริ่มต้นได้ (ไม่เลือกก็เริ่มจากศูนย์ได้)</p>
        <div class="field"><input type="text" id="np-name" maxlength="80" placeholder="เช่น เปิดตัวเว็บไซต์ Q3" /></div>
-       ${tplGrid}`,
+       ${tplGrid}
+       ${aiSection}`,
       [
         { label:'ยกเลิก <span class="en">Cancel</span>', onClick: closeOverlays },
         { label:'สร้าง <span class="en">Create</span>', kind:'primary', onClick: async () => {
@@ -878,7 +896,8 @@
             try{
               const { data, error } = await sb.from('projects').insert({ name, created_by: state.user ? state.user.id : null }).select().single();
               if(error) throw error;
-              if(selectedTpl !== 'blank') await applyTemplate(data.id, selectedTpl);
+              if(selectedTpl === 'ai' && aiTree) await insertTree(data.id, aiTree);
+              else if(selectedTpl !== 'blank') await applyTemplate(data.id, selectedTpl);
               closeOverlays();
               toast('สร้างโปรเจกต์แล้ว · Created');
               openProject(data.id);
@@ -895,6 +914,28 @@
         $('#tpl-grid').querySelectorAll('[data-tpl]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.tpl === selectedTpl)));
       };
     });
+    const aiBtn = $('#ai-generate');
+    if(aiBtn){
+      aiBtn.onclick = async () => {
+        const prompt = ($('#ai-prompt').value || '').trim();
+        if(!prompt){ toast('อธิบายธุรกิจ/โปรเจกต์ก่อนสร้างด้วย AI'); return; }
+        aiBtn.disabled = true;
+        $('#ai-status').textContent = 'กำลังสร้าง...';
+        try{
+          const { data, error } = await sb.functions.invoke('generate-map', { body: { prompt } });
+          if(error) throw error;
+          aiTree = (data && data.nodes) || [];
+          selectedTpl = 'ai';
+          $('#tpl-grid').querySelectorAll('[data-tpl]').forEach(x => x.setAttribute('aria-pressed', 'false'));
+          $('#ai-status').textContent = `AI สร้างแผนผังไว้แล้ว (${aiTree.length} checkpoint) ✅`;
+        }catch(err){
+          $('#ai-status').textContent = '';
+          toast('สร้างด้วย AI ไม่สำเร็จ ลองใหม่อีกครั้ง');
+        }finally{
+          aiBtn.disabled = false;
+        }
+      };
+    }
   }
 
   /* ============ mind map ============ */
