@@ -82,6 +82,9 @@
     background:var(--surface);
   }
   .topbar .grow{flex:1;min-width:120px}
+  .logo-btn{padding:0;flex:none;display:inline-flex;border-radius:8px;transition:opacity var(--t)}
+  .logo-btn:hover{opacity:.7}
+  .logo-btn img{display:block}
   .sync{display:flex;align-items:center;gap:8px}
   .sync-time{font-size:12px;color:var(--ink-3);white-space:nowrap}
   .dot-live{width:6px;height:6px;border-radius:50%;background:var(--done);flex:none}
@@ -359,7 +362,7 @@
   <div class="view" id="v-auth">
     <div class="state">
       <button class="btn btn-ghost btn-sm" id="auth-back">← กลับ <span class="en">Back</span></button>
-      <img src="logo/milemap-icon.svg" alt="Milemaps" width="36" height="36" />
+      <button class="logo-btn" id="auth-logo" aria-label="Milemaps — หน้าหลัก"><img src="logo/milemap-icon.svg" alt="" width="36" height="36" /></button>
       <div class="eyebrow">Sign in</div>
       <h2 style="font-size:18px;font-weight:600">เข้าสู่ระบบ</h2>
       <p class="muted" style="max-width:320px">ล็อกอินด้วยอีเมลเพื่อเข้าถึง shared workspace ของทีม</p>
@@ -387,7 +390,7 @@
   <!-- DASHBOARD -->
   <div class="view" id="v-dash">
     <div class="topbar">
-      <img src="logo/milemap-icon.svg" alt="Milemaps" width="28" height="28" style="flex:none" />
+      <button class="logo-btn" id="dash-logo" aria-label="Milemaps — หน้าหลัก"><img src="logo/milemap-icon.svg" alt="" width="28" height="28" /></button>
       <div class="grow">
         <div class="eyebrow">Milemaps</div>
         <strong style="font-weight:600">โปรเจกต์ทั้งหมด</strong>
@@ -419,6 +422,7 @@
   <!-- MIND MAP -->
   <div class="view" id="v-map">
     <div class="topbar">
+      <button class="logo-btn" id="map-logo" aria-label="Milemaps — หน้าหลัก"><img src="logo/milemap-icon.svg" alt="" width="24" height="24" /></button>
       <button class="btn btn-ghost btn-sm" id="btn-back">← โปรเจกต์ทั้งหมด</button>
       <div class="grow" style="min-width:0">
         <div class="eyebrow">Mind map</div>
@@ -1414,6 +1418,15 @@
   $('#landing-try').onclick = enterDemo;
   $('#landing-try-2').onclick = enterDemo;
   $('#landing-signin-link').onclick = () => show('auth');
+
+  /* กดโลโก้ที่มุมซ้าย = กลับหน้าหลักเสมอ: โหมดทดลอง/ยังไม่ล็อกอิน -> landing, ล็อกอินจริงอยู่ในหน้า map -> กลับ dashboard */
+  function goHome(){
+    if(state.demo || !state.user){ show('landing'); return; }
+    if(state.view === 'map') $('#btn-back').click();
+  }
+  $('#auth-logo').onclick = goHome;
+  $('#dash-logo').onclick = goHome;
+  $('#map-logo').onclick = goHome;
 
   /* ============ guided tour ============ */
   const TOUR_DASH = [
