@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Milemap">
+  <rect width="512" height="512" rx="120" fill="#4F46E5"/>
+  <g transform="translate(256,256) scale(3.4)">
+    <g fill="none" stroke="#A5B4FC" stroke-width="2.4" stroke-linecap="round">
+      <path d="M0 0C7-12 17-17 24-22"/>
+      <path d="M0 0C12 2 19 10 24 17"/>
+      <path d="M0 0C-12 5-19 10-25 12"/>
+    </g>
+    <circle r="9.5" fill="none" stroke="#FFFFFF" stroke-width="3.4"/>
+    <circle cx="24" cy="-22" r="6.5" fill="#4ADE80"/>
+    <circle cx="24" cy="17" r="6.5" fill="#FFFFFF"/>
+    <circle cx="-25" cy="12" r="6.5" fill="#A5B4FC"/>
+  </g>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="currentColor" role="img" aria-label="Milemap">
+  <g transform="translate(32,32)">
+    <g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity="0.35">
+      <path d="M0 0C7-12 17-17 24-22"/>
+      <path d="M0 0C12 2 19 10 24 17"/>
+      <path d="M0 0C-12 5-19 10-25 12"/>
+    </g>
+    <circle r="9.5" fill="none" stroke="currentColor" stroke-width="3.4"/>
+    <circle cx="24" cy="-22" r="6.5"/>
+    <circle cx="24" cy="17" r="6.5" opacity="0.6"/>
+    <circle cx="-25" cy="12" r="6.5" opacity="0.3"/>
+  </g>
+</svg>
