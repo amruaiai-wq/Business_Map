@@ -267,20 +267,7 @@
   .landing-inner{max-width:760px;margin:0 auto;padding:56px 24px 80px;text-align:center}
   .landing-inner h1{font-size:32px;font-weight:600;letter-spacing:-.01em;margin-top:10px}
   .landing-inner .lead{color:var(--ink-2);font-size:15px;margin:14px auto 28px;max-width:520px}
-  .landing-cta{display:flex;gap:10px;justify-content:center;margin-bottom:44px}
-
-  .story{
-    position:relative;height:280px;background:var(--surface);border:1px solid var(--line);
-    border-radius:var(--radius);overflow:hidden;margin-bottom:12px;
-  }
-  .story-frame{
-    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:14px;padding:24px;opacity:0;transition:opacity 500ms ease;pointer-events:none;
-  }
-  .story-frame.on{opacity:1}
-  .story-dots{display:flex;gap:6px;justify-content:center;margin-bottom:32px}
-  .story-dots span{width:6px;height:6px;border-radius:50%;background:var(--line-soft)}
-  .story-dots span.on{background:var(--accent)}
+  .landing-cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
 
   .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:8px;text-align:left}
   .feat-grid .card{cursor:default}
@@ -347,41 +334,10 @@
         <h1>ติดตามความคืบหน้าโปรเจกต์แบบเห็นภาพรวม</h1>
         <p class="lead">สร้างโปรเจกต์ แตก checkpoint เป็นแผนผังความคิด แชร์กับทีมแบบเรียลไทม์ — เริ่มจากเทมเพลตธุรกิจสำเร็จรูป หรือเริ่มจากศูนย์ก็ได้</p>
         <div class="landing-cta">
-          <button class="btn btn-primary" id="landing-cta">เริ่มต้นใช้งาน <span class="en">Get started</span></button>
+          <button class="btn btn-primary" id="landing-try">ลองใช้งานเลย <span class="en">Try it now</span></button>
+          <button class="btn btn-ghost" id="landing-signin-link">มีบัญชีอยู่แล้ว? เข้าสู่ระบบ <span class="en">Sign in</span></button>
         </div>
-
-        <div class="story" id="story">
-          <div class="story-frame on" data-frame="0">
-            <div class="eyebrow">Step 1</div>
-            <div style="font-weight:600">เพิ่มโปรเจกต์แรกของคุณ</div>
-            <button class="btn btn-primary btn-sm" style="pointer-events:none">+ เพิ่มโปรเจกต์</button>
-          </div>
-          <div class="story-frame" data-frame="1">
-            <div class="eyebrow">Step 2</div>
-            <div style="font-weight:600">ตั้งชื่อ หรือเลือกเทมเพลตธุรกิจ</div>
-            <div class="field" style="width:220px;pointer-events:none"><input type="text" value="ร้านกาแฟสาขาใหม่" readonly /></div>
-          </div>
-          <div class="story-frame" data-frame="2">
-            <div class="eyebrow">Step 3</div>
-            <div style="font-weight:600">ได้แผนผังความคิดพร้อมใช้งานทันที</div>
-            <div style="width:64px;height:64px;border-radius:50%;border:1.25px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">MAP</div>
-          </div>
-          <div class="story-frame" data-frame="3">
-            <div class="eyebrow">Step 4</div>
-            <div style="font-weight:600">กด + เพื่อเพิ่ม checkpoint แล้วใส่รายละเอียด</div>
-            <button class="btn btn-sm" style="pointer-events:none">+ เพิ่ม checkpoint</button>
-          </div>
-          <div class="story-frame" data-frame="4">
-            <div class="eyebrow">Step 5</div>
-            <div style="font-weight:600">ติดตามสถานะและแชร์กับทีมแบบเรียลไทม์</div>
-            <div style="display:flex;gap:6px">
-              <span style="width:8px;height:8px;border-radius:50%;background:#A3A3A3"></span>
-              <span style="width:8px;height:8px;border-radius:50%;background:#4F46E5"></span>
-              <span style="width:8px;height:8px;border-radius:50%;background:#16A34A"></span>
-            </div>
-          </div>
-        </div>
-        <div class="story-dots" id="story-dots"></div>
+        <p class="muted" style="margin-bottom:44px">ไม่ต้องสมัครสมาชิกเพื่อลองเล่น — ข้อมูลจะไม่ถูกบันทึกจนกว่าจะเข้าสู่ระบบ</p>
 
         <div class="feat-grid">
           <div class="card"><h4>🧭 เทมเพลตธุรกิจ</h4><p>เริ่มจากเว็บไซต์ ร้านน้ำ ร้านกาแฟ หอพัก และอื่น ๆ ไม่ต้องเริ่มนับหนึ่งเอง</p></div>
@@ -390,7 +346,7 @@
         </div>
 
         <div class="landing-cta" style="margin-top:36px">
-          <button class="btn btn-primary" id="landing-cta-2">เริ่มต้นใช้งาน <span class="en">Get started</span></button>
+          <button class="btn btn-primary" id="landing-try-2">ลองใช้งานเลย <span class="en">Try it now</span></button>
         </div>
       </div>
     </div>
@@ -645,6 +601,24 @@
     await insertLevel(tpl.tree, null);
   }
 
+  /* ============ guest sandbox (no login, in-memory only) ============ */
+  const demoStore = { projects: [], data: {} }; // data[id] = { name, team:[], checkpoints:[] }
+  const demoId = () => 'demo-' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+
+  function applyTemplateLocal(pid, key){
+    const tpl = TEMPLATES[key];
+    if(!tpl) return;
+    const cps = demoStore.data[pid].checkpoints;
+    function insertLevel(nodes, parentId){
+      nodes.forEach(n => {
+        const id = demoId();
+        cps.push({ id, parentId, title:n.title, status:'todo', assignee:'', note:'', createdAt: Date.now() });
+        if(n.children && n.children.length) insertLevel(n.children, id);
+      });
+    }
+    insertLevel(tpl.tree, null);
+  }
+
   let toastT;
   function toast(msg){
     const t = $('#toast'); t.textContent = msg; t.classList.add('on');
@@ -680,6 +654,7 @@
   const state = {
     view:'loading',
     user:null,
+    demo:false,     // true = โหมดทดลองไม่ล็อกอิน ข้อมูลอยู่ใน demoStore ไม่แตะ Supabase
     projects:[],
     pid:null,
     project:{ name:'', team:[], checkpoints:[] },
@@ -732,6 +707,16 @@
 
   /* ============ dashboard ============ */
   async function loadProjects(){
+    if(state.demo){
+      state.projects = demoStore.projects;
+      const withCounts = state.projects.map(p => {
+        const cps = (demoStore.data[p.id] && demoStore.data[p.id].checkpoints) || [];
+        return { id:p.id, name:p.name, createdAt:p.createdAt, total:cps.length, done:cps.filter(c=>c.status==='done').length };
+      });
+      renderDash(withCounts);
+      stamp('#dash-sync');
+      return;
+    }
     const { data: projects, error } = await sb.from('projects').select('id,name,created_at').order('created_at', { ascending:false });
     if(error) throw error;
     state.projects = projects || [];
@@ -746,6 +731,7 @@
 
   /* งานที่ล็อกอินอยู่ถูก assign ให้ ข้ามทุกโปรเจกต์ (จับคู่ด้วยอีเมล ใช้ได้ทั้ง email/password และ Google) */
   async function loadMyTasks(){
+    if(state.demo) return [];
     if(!state.user || !state.user.email) return [];
     const { data, error } = await sb.from('checkpoints')
       .select('id,title,status,project_id,projects(name)')
@@ -826,6 +812,13 @@
           text:`<b>${esc(p.name)}</b> และ checkpoint ทั้งหมดจะถูกลบถาวร และทุกคนในทีมจะไม่เห็นโปรเจกต์นี้อีก`,
           ok:'ลบโปรเจกต์',
           onOk: async () => {
+            if(state.demo){
+              demoStore.projects = demoStore.projects.filter(x => x.id !== p.id);
+              delete demoStore.data[p.id];
+              toast('ลบโปรเจกต์แล้ว (โหมดทดลอง) · Deleted');
+              await refreshDash();
+              return;
+            }
             try{
               const { error } = await sb.from('projects').delete().eq('id', p.id); // cascades checkpoints + team
               if(error) throw error;
@@ -863,6 +856,16 @@
         { label:'สร้าง <span class="en">Create</span>', kind:'primary', onClick: async () => {
             const name = ($('#np-name').value || '').trim();
             if(!name){ toast('ใส่ชื่อโปรเจกต์ก่อน'); return; }
+            if(state.demo){
+              const id = demoId();
+              demoStore.projects.unshift({ id, name, createdAt: Date.now() });
+              demoStore.data[id] = { name, team:[], checkpoints:[] };
+              if(selectedTpl !== 'blank') applyTemplateLocal(id, selectedTpl);
+              closeOverlays();
+              toast('สร้างโปรเจกต์แล้ว (โหมดทดลอง) · Created');
+              openProject(id);
+              return;
+            }
             try{
               const { data, error } = await sb.from('projects').insert({ name, created_by: state.user ? state.user.id : null }).select().single();
               if(error) throw error;
@@ -1089,6 +1092,15 @@
   async function openProject(id){
     state.pid = id;
     show('map');
+    if(state.demo){
+      state.project = demoStore.data[id];
+      $('#map-title').textContent = currentProjectName();
+      renderMap();
+      fitView();
+      stamp('#map-sync');
+      maybeRunTour(TOUR_MAP, 'tour_map_seen');
+      return;
+    }
     unsubscribeDash();
     stopPoll();
     await loadProject(false);
@@ -1161,6 +1173,19 @@
       assignee: $('#f-assignee').value || '',
       note: $('#f-note').value.trim()
     };
+    if(state.demo){
+      if(ed.id){
+        const i = state.project.checkpoints.findIndex(c => c.id === ed.id);
+        if(i > -1) state.project.checkpoints[i] = { ...state.project.checkpoints[i], ...patch };
+      }else{
+        state.project.checkpoints.push({ id: demoId(), parentId: ed.parentId || null, createdAt: Date.now(), ...patch });
+      }
+      closeOverlays();
+      renderMap();
+      stamp('#map-sync');
+      toast(ed.id ? 'บันทึกแล้ว (โหมดทดลอง) · Saved' : 'เพิ่ม checkpoint แล้ว (โหมดทดลอง) · Added');
+      return;
+    }
     try{
       if(ed.id){
         const { data, error } = await sb.from('checkpoints').update(patch).eq('id', ed.id).select().single();
@@ -1194,6 +1219,14 @@
         : `<b>${esc(cp.title)}</b> จะถูกลบถาวร`,
       ok:'ลบทั้งกิ่ง',
       onOk: async () => {
+        if(state.demo){
+          const kill = new Set(ids);
+          state.project.checkpoints = state.project.checkpoints.filter(c => !kill.has(c.id));
+          renderMap();
+          stamp('#map-sync');
+          toast('ลบแล้ว (โหมดทดลอง) · Deleted');
+          return;
+        }
         try{
           const { error } = await sb.from('checkpoints').delete().eq('id', id); // DB cascades ลูกหลานให้อัตโนมัติ
           if(error) throw error;
@@ -1232,6 +1265,11 @@
         if(!n) return;
         if(!n.includes('@') || !n.includes('.')){ toast('ใส่อีเมลให้ถูกต้อง เช่น name@gmail.com'); return; }
         if((state.project.team || []).includes(n)){ toast('มีอีเมลนี้อยู่แล้ว'); return; }
+        if(state.demo){
+          state.project.team = [...(state.project.team || []), n];
+          render();
+          return;
+        }
         try{
           const { error } = await sb.from('project_team').insert({ project_id: state.pid, name:n });
           if(error) throw error;
@@ -1242,6 +1280,11 @@
       $('#tm-name').onkeydown = e => { if(e.key === 'Enter') $('#tm-add').click(); };
       document.querySelectorAll('[data-rm]').forEach(b => {
         b.onclick = async () => {
+          if(state.demo){
+            state.project.team = (state.project.team || []).filter(x => x !== b.dataset.rm);
+            render();
+            return;
+          }
           try{
             const { error } = await sb.from('project_team').delete().eq('project_id', state.pid).eq('name', b.dataset.rm);
             if(error) throw error;
@@ -1296,6 +1339,11 @@
   $('#btn-team').onclick = teamModal;
   $('#btn-back').onclick = async () => {
     closeOverlays();
+    if(state.demo){
+      show('dash');
+      await refreshDash();
+      return;
+    }
     unsubscribeMap();
     stopPoll();
     show('dash');
@@ -1339,26 +1387,28 @@
     }catch(err){ authError(err.message || 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ'); }
   };
 
-  /* ============ landing page ============ */
-  $('#landing-cta').onclick = () => show('auth');
-  $('#landing-cta-2').onclick = () => show('auth');
-  (function initStory(){
-    const frames = document.querySelectorAll('.story-frame');
-    const dotsWrap = $('#story-dots');
-    frames.forEach((_, i) => {
-      const d = document.createElement('span');
-      if(i === 0) d.className = 'on';
-      dotsWrap.appendChild(d);
+  /* ============ landing page + guest sandbox entry/exit ============ */
+  function setDemoUI(on){
+    state.demo = on;
+    const label = on
+      ? 'เข้าสู่ระบบเพื่อบันทึก <span class="en">Save with account</span>'
+      : 'ออกจากระบบ <span class="en">Sign out</span>';
+    $('#dash-signout').innerHTML = label;
+    $('#map-signout').innerHTML = label;
+    document.querySelectorAll('.topbar .eyebrow').forEach(el => {
+      if(on){ if(!el.dataset.orig) el.dataset.orig = el.textContent; el.textContent = 'โหมดทดลอง · Demo'; }
+      else if(el.dataset.orig){ el.textContent = el.dataset.orig; }
     });
-    let i = 0;
-    setInterval(() => {
-      frames[i].classList.remove('on');
-      dotsWrap.children[i].classList.remove('on');
-      i = (i + 1) % frames.length;
-      frames[i].classList.add('on');
-      dotsWrap.children[i].classList.add('on');
-    }, 3000);
-  })();
+  }
+  function enterDemo(){
+    setDemoUI(true);
+    show('dash');
+    refreshDash();
+    maybeRunTour(TOUR_DASH, 'tour_dash_seen');
+  }
+  $('#landing-try').onclick = enterDemo;
+  $('#landing-try-2').onclick = enterDemo;
+  $('#landing-signin-link').onclick = () => show('auth');
 
   /* ============ guided tour ============ */
   const TOUR_DASH = [
@@ -1416,6 +1466,13 @@
   $('#dash-tour-btn').onclick = () => maybeRunTour(TOUR_DASH, 'tour_dash_seen', true);
 
   async function doSignOut(){
+    if(state.demo){
+      demoStore.projects = [];
+      demoStore.data = {};
+      setDemoUI(false);
+      show('auth');
+      return;
+    }
     unsubscribeDash();
     unsubscribeMap();
     stopPoll();
@@ -1426,6 +1483,7 @@
 
   async function enterApp(){
     try{
+      setDemoUI(false);
       await refreshDash();
       show('dash');
       subscribeDash();
