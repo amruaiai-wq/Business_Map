@@ -216,6 +216,10 @@
   .seg .sdot{width:8px;height:8px;border-radius:50%;display:block;margin-bottom:2px}
   .breadcrumb{font-size:12px;color:var(--ink-3);word-break:break-word}
 
+  .lang-toggle{grid-template-columns:repeat(2,1fr);gap:4px;flex:none}
+  .lang-toggle button{padding:6px 10px;font-size:12px;flex-direction:row}
+  .topbar .lang-toggle{width:112px}
+
   @media(max-width:640px){
     .panel{
       top:auto;bottom:0;right:0;left:0;width:auto;height:auto;max-height:86dvh;
@@ -318,17 +322,17 @@
   <div class="view active" id="v-loading">
     <div class="state">
       <div class="spinner"></div>
-      <div class="muted">กำลังโหลดข้อมูล · Loading</div>
+      <div class="muted" data-i18n="loading">กำลังโหลดข้อมูล</div>
     </div>
   </div>
 
   <!-- ERROR -->
   <div class="view" id="v-error">
     <div class="state">
-      <div class="eyebrow">Storage error</div>
-      <h2 style="font-size:18px;font-weight:600">เชื่อมต่อข้อมูลไม่สำเร็จ</h2>
-      <p class="muted" id="err-msg" style="max-width:360px">ระบบดึงข้อมูลจาก Supabase ไม่ได้ ลองใหม่อีกครั้ง</p>
-      <button class="btn btn-primary" id="err-retry">ลองใหม่ <span class="en">Retry</span></button>
+      <div class="eyebrow" data-i18n="storage_error_kicker">เชื่อมต่อข้อมูลผิดพลาด</div>
+      <h2 style="font-size:18px;font-weight:600" data-i18n="storage_error_title">เชื่อมต่อข้อมูลไม่สำเร็จ</h2>
+      <p class="muted" id="err-msg" style="max-width:360px" data-i18n="storage_error_msg">ระบบดึงข้อมูลจาก Supabase ไม่ได้ ลองใหม่อีกครั้ง</p>
+      <button class="btn btn-primary" id="err-retry" data-i18n="retry">ลองใหม่</button>
     </div>
   </div>
 
@@ -336,23 +340,27 @@
   <div class="view" id="v-landing">
     <div class="landing-wrap">
       <div class="landing-inner">
-        <img src="logo/milemap-lockup.svg" alt="Milemaps" height="40" style="margin-bottom:22px" />
-        <h1>ติดตามความคืบหน้าโปรเจกต์แบบเห็นภาพรวม</h1>
-        <p class="lead">สร้างโปรเจกต์ แตก checkpoint เป็นแผนผังความคิด แชร์กับทีมแบบเรียลไทม์ — เริ่มจากเทมเพลตธุรกิจสำเร็จรูป หรือเริ่มจากศูนย์ก็ได้</p>
-        <div class="landing-cta">
-          <button class="btn btn-primary" id="landing-try">ลองใช้งานเลย <span class="en">Try it now</span></button>
-          <button class="btn btn-ghost" id="landing-signin-link">มีบัญชีอยู่แล้ว? เข้าสู่ระบบ <span class="en">Sign in</span></button>
+        <div class="lang-toggle seg" style="max-width:140px;margin:0 auto 18px">
+          <button type="button" data-lang="th" aria-pressed="true">ไทย</button>
+          <button type="button" data-lang="en" aria-pressed="false">English</button>
         </div>
-        <p class="muted" style="margin-bottom:44px">ไม่ต้องสมัครสมาชิกเพื่อลองเล่น — ข้อมูลจะไม่ถูกบันทึกจนกว่าจะเข้าสู่ระบบ</p>
+        <img src="logo/milemap-lockup.svg" alt="Milemaps" height="40" style="margin-bottom:22px" />
+        <h1 data-i18n="landing_h1">ติดตามความคืบหน้าโปรเจกต์แบบเห็นภาพรวม</h1>
+        <p class="lead" data-i18n="landing_lead">สร้างโปรเจกต์ แตก checkpoint เป็นแผนผังความคิด แชร์กับทีมแบบเรียลไทม์ — เริ่มจากเทมเพลตธุรกิจสำเร็จรูป หรือเริ่มจากศูนย์ก็ได้</p>
+        <div class="landing-cta">
+          <button class="btn btn-primary" id="landing-try" data-i18n="landing_try">ลองใช้งานเลย</button>
+          <button class="btn btn-ghost" id="landing-signin-link" data-i18n="landing_signin_link">มีบัญชีอยู่แล้ว? เข้าสู่ระบบ</button>
+        </div>
+        <p class="muted" style="margin-bottom:44px" data-i18n="landing_note">ไม่ต้องสมัครสมาชิกเพื่อลองเล่น — ข้อมูลจะไม่ถูกบันทึกจนกว่าจะเข้าสู่ระบบ</p>
 
         <div class="feat-grid">
-          <div class="card"><h4>🧭 เทมเพลตธุรกิจ</h4><p>เริ่มจากเว็บไซต์ ร้านน้ำ ร้านกาแฟ หอพัก และอื่น ๆ ไม่ต้องเริ่มนับหนึ่งเอง</p></div>
-          <div class="card"><h4>⚡ เรียลไทม์</h4><p>ทีมเห็นความเปลี่ยนแปลงทันที ไม่ต้องรีเฟรชเอง</p></div>
-          <div class="card"><h4>🗺️ Mind map</h4><p>มองเห็นภาพรวมและลำดับงานย่อยได้ในหน้าเดียว</p></div>
+          <div class="card"><h4 data-i18n="feat1_h">🧭 เทมเพลตธุรกิจ</h4><p data-i18n="feat1_p">เริ่มจากเว็บไซต์ ร้านน้ำ ร้านกาแฟ หอพัก และอื่น ๆ ไม่ต้องเริ่มนับหนึ่งเอง</p></div>
+          <div class="card"><h4 data-i18n="feat2_h">⚡ เรียลไทม์</h4><p data-i18n="feat2_p">ทีมเห็นความเปลี่ยนแปลงทันที ไม่ต้องรีเฟรชเอง</p></div>
+          <div class="card"><h4 data-i18n="feat3_h">🗺️ Mind map</h4><p data-i18n="feat3_p">มองเห็นภาพรวมและลำดับงานย่อยได้ในหน้าเดียว</p></div>
         </div>
 
         <div class="landing-cta" style="margin-top:36px">
-          <button class="btn btn-primary" id="landing-try-2">ลองใช้งานเลย <span class="en">Try it now</span></button>
+          <button class="btn btn-primary" id="landing-try-2" data-i18n="landing_try">ลองใช้งานเลย</button>
         </div>
       </div>
     </div>
@@ -361,28 +369,32 @@
   <!-- AUTH -->
   <div class="view" id="v-auth">
     <div class="state">
-      <button class="btn btn-ghost btn-sm" id="auth-back">← กลับ <span class="en">Back</span></button>
+      <button class="btn btn-ghost btn-sm" id="auth-back" data-i18n="back">← กลับ</button>
+      <div class="lang-toggle seg" style="max-width:120px">
+        <button type="button" data-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
       <button class="logo-btn" id="auth-logo" aria-label="Milemaps — หน้าหลัก"><img src="logo/milemap-icon.svg" alt="" width="36" height="36" /></button>
-      <div class="eyebrow">Sign in</div>
-      <h2 style="font-size:18px;font-weight:600">เข้าสู่ระบบ</h2>
-      <p class="muted" style="max-width:320px">ล็อกอินด้วยอีเมลเพื่อเข้าถึง shared workspace ของทีม</p>
+      <div class="eyebrow" data-i18n="sign_in_kicker">เข้าสู่ระบบ</div>
+      <h2 style="font-size:18px;font-weight:600" data-i18n="sign_in_title">เข้าสู่ระบบ</h2>
+      <p class="muted" style="max-width:320px" data-i18n="sign_in_lead">ล็อกอินด้วยอีเมลเพื่อเข้าถึง shared workspace ของทีม</p>
       <button class="btn btn-google" id="auth-google">
         <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.1-2 13.7-5.4l-6.3-5.3C29.4 35 26.8 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.3 5.3C39.5 37 44 31 44 24c0-1.2-.1-2.4-.4-3.5z"/></svg>
-        <span>เข้าสู่ระบบด้วย Google</span>
+        <span data-i18n="sign_in_google">เข้าสู่ระบบด้วย Google</span>
       </button>
-      <div class="divider"><span>หรือ · or</span></div>
+      <div class="divider"><span data-i18n="or">หรือ</span></div>
       <div class="field" style="width:100%;max-width:300px;text-align:left">
-        <label for="auth-email">อีเมล <span class="en">Email</span></label>
+        <label for="auth-email" data-i18n="email">อีเมล</label>
         <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="username" />
       </div>
       <div class="field" style="width:100%;max-width:300px;text-align:left">
-        <label for="auth-password">รหัสผ่าน <span class="en">Password</span></label>
+        <label for="auth-password" data-i18n="password">รหัสผ่าน</label>
         <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password" />
       </div>
       <div class="muted" id="auth-err" style="color:#DC2626;display:none;max-width:300px"></div>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-primary" id="auth-signin">เข้าสู่ระบบ <span class="en">Sign in</span></button>
-        <button class="btn" id="auth-signup">สมัครสมาชิก <span class="en">Sign up</span></button>
+        <button class="btn btn-primary" id="auth-signin" data-i18n="sign_in">เข้าสู่ระบบ</button>
+        <button class="btn" id="auth-signup" data-i18n="sign_up">สมัครสมาชิก</button>
       </div>
     </div>
   </div>
@@ -392,28 +404,33 @@
     <div class="topbar">
       <button class="logo-btn" id="dash-logo" aria-label="Milemaps — หน้าหลัก"><img src="logo/milemap-icon.svg" alt="" width="28" height="28" /></button>
       <div class="grow">
-        <div class="eyebrow">Milemaps</div>
-        <strong style="font-weight:600">โปรเจกต์ทั้งหมด</strong>
+        <div class="eyebrow" data-i18n="brand_kicker">Milemaps</div>
+        <strong style="font-weight:600" data-i18n="dash_heading">โปรเจกต์ทั้งหมด</strong>
+      </div>
+      <div class="lang-toggle seg">
+        <button type="button" data-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
       <div class="sync">
         <span class="dot-live"></span>
         <span class="sync-time" id="dash-sync">—</span>
-        <button class="btn btn-sm" id="dash-refresh">รีเฟรช <span class="en">Sync</span></button>
+        <button class="btn btn-sm" id="dash-refresh" data-i18n="sync_btn">รีเฟรช</button>
       </div>
-      <button class="btn btn-ghost btn-sm" id="dash-tour-btn">วิธีใช้งาน <span class="en">How to</span></button>
-      <button class="btn btn-ghost btn-sm" id="dash-signout">ออกจากระบบ <span class="en">Sign out</span></button>
-      <button class="btn btn-primary btn-sm" id="btn-new-project">+ เพิ่มโปรเจกต์</button>
+      <button class="btn btn-ghost btn-sm" id="dash-analytics-btn" data-i18n="analytics_btn">แดชบอร์ด</button>
+      <button class="btn btn-ghost btn-sm" id="dash-tour-btn" data-i18n="how_to">วิธีใช้งาน</button>
+      <button class="btn btn-ghost btn-sm" id="dash-signout" data-i18n="sign_out">ออกจากระบบ</button>
+      <button class="btn btn-primary btn-sm" id="btn-new-project" data-i18n="new_project_btn">+ เพิ่มโปรเจกต์</button>
     </div>
     <div class="page">
       <div class="page-inner">
         <div class="page-head">
-          <h1>ติดตามความคืบหน้า</h1>
-          <p>ทุกคนในทีมที่ล็อกอินเห็นและแก้ไขข้อมูลชุดเดียวกัน — shared workspace, real-time sync.</p>
+          <h1 data-i18n="dash_page_title">ติดตามความคืบหน้า</h1>
+          <p data-i18n="dash_page_lead">คุณและทีมที่ถูกเชิญเห็นและแก้ไขข้อมูลของแต่ละโปรเจกต์ร่วมกัน — real-time sync.</p>
         </div>
         <div id="my-tasks" hidden style="margin-bottom:28px"></div>
         <div id="dash-content"></div>
-        <div class="foot-note">
-          ข้อมูลนี้เป็นแบบ <b>shared</b> — ทุกคนที่ล็อกอินเข้าแอปนี้เห็นและแก้ไขร่วมกันได้
+        <div class="foot-note" data-i18n="dash_foot_note">
+          คุณเห็นเฉพาะ<b>โปรเจกต์ของคุณ</b> และโปรเจกต์ที่ถูกเชิญเข้าร่วมเท่านั้น — คนอื่นที่ล็อกอินเข้ามาจะไม่เห็นข้อมูลนี้
         </div>
       </div>
     </div>
@@ -423,34 +440,64 @@
   <div class="view" id="v-map">
     <div class="topbar">
       <button class="logo-btn" id="map-logo" aria-label="Milemaps — หน้าหลัก"><img src="logo/milemap-icon.svg" alt="" width="24" height="24" /></button>
-      <button class="btn btn-ghost btn-sm" id="btn-back">← โปรเจกต์ทั้งหมด</button>
+      <button class="btn btn-ghost btn-sm" id="btn-back" data-i18n="back_all_projects">← โปรเจกต์ทั้งหมด</button>
       <div class="grow" style="min-width:0">
-        <div class="eyebrow">Mind map</div>
+        <div class="eyebrow" data-i18n="mind_map_kicker">แผนผังความคิด</div>
         <strong id="map-title" style="font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></strong>
+      </div>
+      <div class="lang-toggle seg">
+        <button type="button" data-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
       <div class="sync">
         <span class="dot-live"></span>
         <span class="sync-time" id="map-sync">—</span>
-        <button class="btn btn-sm" id="map-refresh">รีเฟรช <span class="en">Sync</span></button>
+        <button class="btn btn-sm" id="map-refresh" data-i18n="sync_btn">รีเฟรช</button>
       </div>
-      <button class="btn btn-sm" id="btn-team">ทีม <span class="en">Team</span></button>
-      <button class="btn btn-primary btn-sm" id="btn-new-cp">+ เพิ่ม checkpoint</button>
-      <button class="btn btn-ghost btn-sm" id="map-signout">ออกจากระบบ <span class="en">Sign out</span></button>
+      <button class="btn btn-sm" id="btn-team" data-i18n="team_btn">ทีม</button>
+      <button class="btn btn-sm" id="btn-ask-ai-project" data-i18n="ask_ai_project_btn">ถาม AI เกี่ยวกับโปรเจกต์</button>
+      <button class="btn btn-primary btn-sm" id="btn-new-cp" data-i18n="new_checkpoint_btn">+ เพิ่ม checkpoint</button>
+      <button class="btn btn-ghost btn-sm" id="map-signout" data-i18n="sign_out">ออกจากระบบ</button>
     </div>
     <div class="map-wrap">
       <svg id="map"><g id="viewport"></g></svg>
-      <div class="map-empty" id="map-empty" hidden>
+      <div class="map-empty" id="map-empty" hidden data-i18n="map_empty">
         ยังไม่มี checkpoint — กด <b>+ เพิ่ม checkpoint</b> หรือแตะวงกลมตรงกลางเพื่อเริ่ม
       </div>
       <div class="legend">
-        <span><i style="background:#A3A3A3"></i>รอเริ่ม To&nbsp;do</span>
-        <span><i style="background:#4F46E5"></i>กำลังทำ In&nbsp;progress</span>
-        <span><i style="background:#16A34A"></i>เสร็จแล้ว Done</span>
+        <span><i style="background:#A3A3A3"></i><span id="legend-todo">รอเริ่ม</span></span>
+        <span><i style="background:#4F46E5"></i><span id="legend-in_progress">กำลังทำ</span></span>
+        <span><i style="background:#16A34A"></i><span id="legend-done">เสร็จแล้ว</span></span>
       </div>
       <div class="zoom">
-        <button id="z-in" title="ขยาย Zoom in">+</button>
-        <button id="z-out" title="ย่อ Zoom out">−</button>
-        <button id="z-fit" title="พอดีจอ Reset" style="font-size:12px">⤢</button>
+        <button id="z-in" data-i18n-title="zoom_in">+</button>
+        <button id="z-out" data-i18n-title="zoom_out">−</button>
+        <button id="z-fit" data-i18n-title="zoom_fit" style="font-size:12px">⤢</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS DASHBOARD -->
+  <div class="view" id="v-analytics">
+    <div class="topbar">
+      <button class="logo-btn" id="analytics-logo" aria-label="Milemaps — หน้าหลัก"><img src="logo/milemap-icon.svg" alt="" width="28" height="28" /></button>
+      <button class="btn btn-ghost btn-sm" id="btn-analytics-back" data-i18n="back_all_projects">← โปรเจกต์ทั้งหมด</button>
+      <div class="grow">
+        <div class="eyebrow" data-i18n="brand_kicker">Milemaps</div>
+        <strong style="font-weight:600" data-i18n="analytics_title">แดชบอร์ดสรุป</strong>
+      </div>
+      <div class="lang-toggle seg">
+        <button type="button" data-lang="th" aria-pressed="true">ไทย</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+    <div class="page">
+      <div class="page-inner">
+        <div class="page-head">
+          <h1 data-i18n="analytics_title">แดชบอร์ดสรุป</h1>
+          <p data-i18n="analytics_lead">ภาพรวมความคืบหน้าของทุกโปรเจกต์ที่คุณเข้าถึงได้</p>
+        </div>
+        <div id="analytics-content"></div>
       </div>
     </div>
   </div>
@@ -467,34 +514,48 @@
       <h2 id="panel-title">แก้ไข checkpoint</h2>
       <div class="breadcrumb" id="panel-crumb"></div>
     </div>
-    <button class="btn btn-ghost btn-sm" id="panel-close" aria-label="ปิด Close">✕</button>
+    <button class="btn btn-ghost btn-sm" id="panel-close" data-i18n-aria="close_aria" aria-label="ปิด">✕</button>
   </div>
   <div class="panel-body">
     <div class="field">
-      <label for="f-title">ชื่อ checkpoint <span class="en">Title</span></label>
-      <input type="text" id="f-title" maxlength="120" placeholder="เช่น ออกแบบหน้า Landing page" />
+      <label for="f-title" data-i18n="f_title_label">ชื่อ checkpoint</label>
+      <input type="text" id="f-title" maxlength="120" data-i18n-ph="f_title_ph" placeholder="เช่น ออกแบบหน้า Landing page" />
     </div>
     <div class="field">
-      <label>สถานะ <span class="en">Status</span></label>
+      <label data-i18n="f_status_label">สถานะ</label>
       <div class="seg" id="f-status">
-        <button type="button" data-v="todo" aria-pressed="true"><span class="sdot" style="background:#A3A3A3"></span>รอเริ่ม<small>To do</small></button>
-        <button type="button" data-v="in_progress" aria-pressed="false"><span class="sdot" style="background:#4F46E5"></span>กำลังทำ<small>In progress</small></button>
-        <button type="button" data-v="done" aria-pressed="false"><span class="sdot" style="background:#16A34A"></span>เสร็จแล้ว<small>Done</small></button>
+        <button type="button" data-v="todo" aria-pressed="true"><span class="sdot" style="background:#A3A3A3"></span><span id="fs-todo">รอเริ่ม</span></button>
+        <button type="button" data-v="in_progress" aria-pressed="false"><span class="sdot" style="background:#4F46E5"></span><span id="fs-in_progress">กำลังทำ</span></button>
+        <button type="button" data-v="done" aria-pressed="false"><span class="sdot" style="background:#16A34A"></span><span id="fs-done">เสร็จแล้ว</span></button>
       </div>
     </div>
     <div class="field">
-      <label for="f-assignee">ผู้รับผิดชอบ <span class="en">Assignee</span></label>
+      <label for="f-assignee" data-i18n="f_assignee_label">ผู้รับผิดชอบ</label>
       <select id="f-assignee"></select>
-      <div class="muted" style="margin-top:6px">เพิ่มอีเมลได้ที่ปุ่ม “ทีม” ด้านบน</div>
+      <div class="muted" style="margin-top:6px" data-i18n="f_assignee_hint">เพิ่มอีเมลได้ที่ปุ่ม “ทีม” ด้านบน</div>
     </div>
     <div class="field">
-      <label for="f-note">หมายเหตุ <span class="en">Note</span></label>
-      <textarea id="f-note" maxlength="1000" placeholder="รายละเอียด สิ่งที่ค้างอยู่ หรือสิ่งที่ต้องรอ…"></textarea>
+      <label for="f-note" data-i18n="f_note_label">หมายเหตุ</label>
+      <textarea id="f-note" maxlength="1000" data-i18n-ph="f_note_ph" placeholder="รายละเอียด สิ่งที่ค้างอยู่ หรือสิ่งที่ต้องรอ…"></textarea>
+    </div>
+    <div class="field">
+      <label for="f-doc-url" data-i18n="f_doc_url_label">ลิงก์เอกสาร (Google Sheet/Doc)</label>
+      <input type="url" id="f-doc-url" maxlength="500" data-i18n-ph="f_doc_url_ph" placeholder="https://docs.google.com/..." />
+      <a href="#" id="f-doc-open" class="muted" style="margin-top:6px;display:none" target="_blank" rel="noopener" data-i18n="open_doc">📄 เปิดเอกสาร</a>
+    </div>
+    <div class="field" id="cp-ai-field">
+      <label data-i18n="ask_ai_btn">ถาม AI</label>
+      <textarea id="cp-ai-question" maxlength="300" data-i18n-ph="ask_ai_ph" placeholder="ถามเกี่ยวกับ checkpoint นี้ เช่น ควรเริ่มยังไงดี" style="min-height:56px"></textarea>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+        <button type="button" class="btn btn-sm" id="cp-ask-ai" data-i18n="ask_ai_btn">ถาม AI</button>
+        <span class="muted" id="cp-ai-status"></span>
+      </div>
+      <div class="muted" id="cp-ai-answer" style="margin-top:8px;white-space:pre-wrap"></div>
     </div>
   </div>
   <div class="panel-foot">
-    <button class="btn btn-primary" id="panel-save">บันทึก <span class="en">Save</span></button>
-    <button class="btn btn-danger" id="panel-delete">ลบ <span class="en">Delete</span></button>
+    <button class="btn btn-primary" id="panel-save" data-i18n="save">บันทึก</button>
+    <button class="btn btn-danger" id="panel-delete" data-i18n="delete">ลบ</button>
   </div>
 </aside>
 
@@ -536,7 +597,7 @@
 
   /* ============ project templates ============ */
   const TEMPLATES = {
-    website: { label:'เว็บไซต์', emoji:'🌐', tree:[
+    website: { label:{ th:'เว็บไซต์', en:'Website' }, emoji:'🌐', tree:[
       { title:'วางแผน (Discovery)' },
       { title:'ออกแบบ (Design)', children:[ {title:'Wireframe'}, {title:'UI Design'} ] },
       { title:'พัฒนา (Development)', children:[ {title:'Frontend'}, {title:'Backend'}, {title:'เชื่อมต่อฐานข้อมูล'} ] },
@@ -544,7 +605,7 @@
       { title:'เปิดตัว (Deploy)' },
       { title:'ดูแลหลังเปิดตัว (Maintenance)' }
     ]},
-    drink_shop: { label:'ร้านน้ำ', emoji:'🥤', tree:[
+    drink_shop: { label:{ th:'ร้านน้ำ', en:'Drink shop' }, emoji:'🥤', tree:[
       { title:'หาทำเล' },
       { title:'ออกแบบเมนู', children:[ {title:'เมนูเครื่องดื่ม'}, {title:'ราคาขาย'} ] },
       { title:'จัดหาวัตถุดิบ/ซัพพลายเออร์' },
@@ -554,7 +615,7 @@
       { title:'ระบบ POS/บัญชี' },
       { title:'เปิดร้าน', children:[ {title:'Soft opening'}, {title:'Grand opening'} ] }
     ]},
-    coffee_shop: { label:'ร้านกาแฟ', emoji:'☕', tree:[
+    coffee_shop: { label:{ th:'ร้านกาแฟ', en:'Coffee shop' }, emoji:'☕', tree:[
       { title:'หาทำเล' },
       { title:'ออกแบบร้าน (Interior)' },
       { title:'เครื่องชง/อุปกรณ์', children:[ {title:'เครื่องชงกาแฟ'}, {title:'เครื่องบดเมล็ด'} ] },
@@ -564,7 +625,7 @@
       { title:'จดทะเบียนธุรกิจ' },
       { title:'การตลาด/เปิดร้าน' }
     ]},
-    dorm: { label:'ระบบหอพัก', emoji:'🏢', tree:[
+    dorm: { label:{ th:'ระบบหอพัก', en:'Dorm system' }, emoji:'🏢', tree:[
       { title:'สำรวจห้อง/ผังหอ' },
       { title:'ตั้งราคาค่าเช่า' },
       { title:'ระบบสัญญาเช่า' },
@@ -574,7 +635,7 @@
       { title:'การตลาดหาผู้เช่า' },
       { title:'ความปลอดภัย', children:[ {title:'กล้องวงจรปิด'}, {title:'กุญแจ/คีย์การ์ด'} ] }
     ]},
-    billing: { label:'ระบบเก็บเงิน', emoji:'💵', tree:[
+    billing: { label:{ th:'ระบบเก็บเงิน', en:'Billing system' }, emoji:'💵', tree:[
       { title:'กำหนดรายการที่เก็บเงิน' },
       { title:'ออกแบบใบแจ้งหนี้' },
       { title:'แจ้งเตือนก่อนครบกำหนด' },
@@ -583,7 +644,7 @@
       { title:'ติดตามค้างชำระ' },
       { title:'รายงานสรุป' }
     ]},
-    storybook: { label:'สร้างนิทาน', emoji:'📖', tree:[
+    storybook: { label:{ th:'สร้างนิทาน', en:'Storybook' }, emoji:'📖', tree:[
       { title:'คิดโครงเรื่อง (Plot)' },
       { title:'พัฒนาตัวละคร' },
       { title:'เขียนบท', children:[ {title:'ตอนที่ 1'}, {title:'ตอนที่ 2'} ] },
@@ -648,6 +709,7 @@
       status: r.status,
       assignee: r.assignee || '',
       note: r.note || '',
+      docUrl: r.doc_url || '',
       createdAt: r.created_at ? new Date(r.created_at).getTime() : Date.now()
     };
   }
@@ -675,8 +737,216 @@
     editing:null,       // {id|null, parentId}
     draftStatus:'todo',
     blocked:false,      // มี modal/panel เปิดอยู่ → หยุด polling/realtime refresh
-    poll:null
+    poll:null,
+    lang: localStorage.getItem('milemaps-lang') === 'en' ? 'en' : 'th'
   };
+
+  /* ============ i18n — เลือกได้ว่าจะใช้ไทยหรืออังกฤษล้วน ๆ ไม่ผสมกัน ============ */
+  const STRINGS = {
+    doc_title:{ th:'Milemaps — แผนที่โปรเจกต์ของทีม', en:'Milemaps — Your team’s project map' },
+    loading:{ th:'กำลังโหลดข้อมูล', en:'Loading data' },
+    storage_error_kicker:{ th:'เชื่อมต่อข้อมูลผิดพลาด', en:'Storage error' },
+    storage_error_title:{ th:'เชื่อมต่อข้อมูลไม่สำเร็จ', en:'Couldn’t connect' },
+    storage_error_msg:{ th:'ระบบดึงข้อมูลจาก Supabase ไม่ได้ ลองใหม่อีกครั้ง', en:'Couldn’t load data from Supabase. Please try again.' },
+    retry:{ th:'ลองใหม่', en:'Retry' },
+    load_failed:{ th:'อ่านข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง', en:'Couldn’t load data. Please try again.' },
+
+    landing_h1:{ th:'ติดตามความคืบหน้าโปรเจกต์แบบเห็นภาพรวม', en:'Track your project’s progress at a glance' },
+    landing_lead:{ th:'สร้างโปรเจกต์ แตก checkpoint เป็นแผนผังความคิด แชร์กับทีมแบบเรียลไทม์ — เริ่มจากเทมเพลตธุรกิจสำเร็จรูป หรือเริ่มจากศูนย์ก็ได้', en:'Create a project, break it into checkpoints as a mind map, and share it with your team in real time — start from a ready-made business template or from scratch.' },
+    landing_try:{ th:'ลองใช้งานเลย', en:'Try it now' },
+    landing_signin_link:{ th:'มีบัญชีอยู่แล้ว? เข้าสู่ระบบ', en:'Already have an account? Sign in' },
+    landing_note:{ th:'ไม่ต้องสมัครสมาชิกเพื่อลองเล่น — ข้อมูลจะไม่ถูกบันทึกจนกว่าจะเข้าสู่ระบบ', en:'No sign-up needed to try it — nothing is saved until you log in.' },
+    feat1_h:{ th:'🧭 เทมเพลตธุรกิจ', en:'🧭 Business templates' },
+    feat1_p:{ th:'เริ่มจากเว็บไซต์ ร้านน้ำ ร้านกาแฟ หอพัก และอื่น ๆ ไม่ต้องเริ่มนับหนึ่งเอง', en:'Start from website, drink shop, coffee shop, dorm, and more — no need to start from zero.' },
+    feat2_h:{ th:'⚡ เรียลไทม์', en:'⚡ Real-time' },
+    feat2_p:{ th:'ทีมเห็นความเปลี่ยนแปลงทันที ไม่ต้องรีเฟรชเอง', en:'Your team sees changes instantly — no need to refresh.' },
+    feat3_h:{ th:'🗺️ Mind map', en:'🗺️ Mind map' },
+    feat3_p:{ th:'มองเห็นภาพรวมและลำดับงานย่อยได้ในหน้าเดียว', en:'See the big picture and task order on one page.' },
+
+    back:{ th:'← กลับ', en:'← Back' },
+    sign_in_kicker:{ th:'เข้าสู่ระบบ', en:'Sign in' },
+    sign_in_title:{ th:'เข้าสู่ระบบ', en:'Sign in' },
+    sign_in_lead:{ th:'ล็อกอินด้วยอีเมลเพื่อเข้าถึง shared workspace ของทีม', en:'Log in with your email to access your team’s shared workspace' },
+    sign_in_google:{ th:'เข้าสู่ระบบด้วย Google', en:'Sign in with Google' },
+    or:{ th:'หรือ', en:'or' },
+    email:{ th:'อีเมล', en:'Email' },
+    password:{ th:'รหัสผ่าน', en:'Password' },
+    sign_in:{ th:'เข้าสู่ระบบ', en:'Sign in' },
+    sign_up:{ th:'สมัครสมาชิก', en:'Sign up' },
+    err_fill_fields:{ th:'กรอกอีเมลและรหัสผ่าน', en:'Enter your email and password' },
+    err_signin_failed:{ th:'เข้าสู่ระบบไม่สำเร็จ', en:'Sign in failed' },
+    err_google_failed:{ th:'เข้าสู่ระบบด้วย Google ไม่สำเร็จ', en:'Google sign-in failed' },
+    signup_ok:{ th:'สมัครสำเร็จ ตรวจอีเมลเพื่อยืนยัน (ถ้าจำเป็น) แล้วเข้าสู่ระบบ', en:'Signed up! Check your email to confirm (if needed), then sign in.' },
+
+    brand_kicker:{ th:'Milemaps', en:'Milemaps' },
+    updated_at_prefix:{ th:'อัพเดตล่าสุด', en:'Last updated' },
+    dash_heading:{ th:'โปรเจกต์ทั้งหมด', en:'All projects' },
+    sync_btn:{ th:'รีเฟรช', en:'Sync' },
+    how_to:{ th:'วิธีใช้งาน', en:'How to' },
+    analytics_btn:{ th:'แดชบอร์ด', en:'Dashboard' },
+    sign_out:{ th:'ออกจากระบบ', en:'Sign out' },
+    save_with_account:{ th:'เข้าสู่ระบบเพื่อบันทึก', en:'Save with account' },
+    new_project_btn:{ th:'+ เพิ่มโปรเจกต์', en:'+ New project' },
+    dash_page_title:{ th:'ติดตามความคืบหน้า', en:'Track progress' },
+    dash_page_lead:{ th:'คุณและทีมที่ถูกเชิญเห็นและแก้ไขข้อมูลของแต่ละโปรเจกต์ร่วมกัน — real-time sync.', en:'You and invited teammates see and edit each project’s data together — real-time sync.' },
+    dash_foot_note:{ th:'คุณเห็นเฉพาะ<b>โปรเจกต์ของคุณ</b> และโปรเจกต์ที่ถูกเชิญเข้าร่วมเท่านั้น — คนอื่นที่ล็อกอินเข้ามาจะไม่เห็นข้อมูลนี้', en:'You only see <b>your own projects</b> and the ones you’ve been invited to — other people who log in won’t see this data.' },
+    no_projects_kicker:{ th:'ยังไม่มีโปรเจกต์', en:'No projects yet' },
+    no_projects_title:{ th:'ยังไม่มีโปรเจกต์', en:'No projects yet' },
+    no_projects_p:{ th:'เริ่มจากโปรเจกต์แรกของทีม แล้วค่อยแตก checkpoint ในหน้า mind map', en:'Start with your team’s first project, then break it into checkpoints on the mind map.' },
+    delete_project_aria:{ th:'ลบโปรเจกต์', en:'Delete project' },
+    created_on:{ th:'สร้างเมื่อ', en:'Created' },
+    done_count:{ th:'เสร็จแล้ว', en:'Done' },
+    confirm_delete_project_title:{ th:'ลบโปรเจกต์นี้?', en:'Delete this project?' },
+    confirm_delete_project_text:{ th:'{name} และ checkpoint ทั้งหมดจะถูกลบถาวร และทุกคนในทีมจะไม่เห็นโปรเจกต์นี้อีก', en:'{name} and all its checkpoints will be permanently deleted, and no teammate will see this project again.' },
+    delete_project_ok:{ th:'ลบโปรเจกต์', en:'Delete project' },
+    project_deleted_demo:{ th:'ลบโปรเจกต์แล้ว (โหมดทดลอง)', en:'Project deleted (demo mode)' },
+    project_deleted:{ th:'ลบโปรเจกต์แล้ว', en:'Project deleted' },
+    delete_failed_retry:{ th:'ลบไม่สำเร็จ ลองใหม่อีกครั้ง', en:'Couldn’t delete. Please try again.' },
+
+    assigned_to_me_kicker:{ th:'งานที่ได้รับมอบหมาย', en:'Assigned to me' },
+    assigned_to_me_title:{ th:'งานที่ได้รับมอบหมาย', en:'Tasks assigned to me' },
+
+    back_all_projects:{ th:'← โปรเจกต์ทั้งหมด', en:'← All projects' },
+    mind_map_kicker:{ th:'แผนผังความคิด', en:'Mind map' },
+    team_btn:{ th:'ทีม', en:'Team' },
+    new_checkpoint_btn:{ th:'+ เพิ่ม checkpoint', en:'+ Add checkpoint' },
+    map_empty:{ th:'ยังไม่มี checkpoint — กด <b>+ เพิ่ม checkpoint</b> หรือแตะวงกลมตรงกลางเพื่อเริ่ม', en:'No checkpoints yet — click <b>+ Add checkpoint</b> or tap the center circle to start.' },
+    zoom_in:{ th:'ขยาย', en:'Zoom in' },
+    zoom_out:{ th:'ย่อ', en:'Zoom out' },
+    zoom_fit:{ th:'พอดีจอ', en:'Reset view' },
+    untitled_node:{ th:'(ไม่มีชื่อ)', en:'(untitled)' },
+    default_project_name:{ th:'โปรเจกต์', en:'Project' },
+
+    panel_kicker_edit:{ th:'Edit checkpoint', en:'Edit checkpoint' },
+    panel_kicker_new:{ th:'New checkpoint', en:'New checkpoint' },
+    panel_title_edit:{ th:'แก้ไข checkpoint', en:'Edit checkpoint' },
+    panel_title_new:{ th:'เพิ่ม checkpoint', en:'Add checkpoint' },
+    panel_crumb_branch:{ th:'แตกกิ่งจาก · under:', en:'Branch from · under:' },
+    panel_crumb_top:{ th:'ระดับบนสุด', en:'Top level' },
+    f_title_label:{ th:'ชื่อ checkpoint', en:'Checkpoint title' },
+    f_title_ph:{ th:'เช่น ออกแบบหน้า Landing page', en:'e.g. Design the landing page' },
+    f_status_label:{ th:'สถานะ', en:'Status' },
+    f_assignee_label:{ th:'ผู้รับผิดชอบ', en:'Assignee' },
+    f_assignee_hint:{ th:'เพิ่มอีเมลได้ที่ปุ่ม “ทีม” ด้านบน', en:'Add emails via the “Team” button above' },
+    unassigned_opt:{ th:'— ยังไม่ระบุ —', en:'— Unassigned —' },
+    f_note_label:{ th:'หมายเหตุ', en:'Note' },
+    f_note_ph:{ th:'รายละเอียด สิ่งที่ค้างอยู่ หรือสิ่งที่ต้องรอ…', en:'Details, what’s pending, or what you’re waiting on…' },
+    f_doc_url_label:{ th:'ลิงก์เอกสาร (Google Sheet/Doc)', en:'Document link (Google Sheet/Doc)' },
+    f_doc_url_ph:{ th:'https://docs.google.com/...', en:'https://docs.google.com/...' },
+    open_doc:{ th:'📄 เปิดเอกสาร', en:'📄 Open document' },
+    save:{ th:'บันทึก', en:'Save' },
+    close_aria:{ th:'ปิด', en:'Close' },
+    delete:{ th:'ลบ', en:'Delete' },
+    checkpoint_taken_toast:{ th:'checkpoint นี้ถูกลบโดยคนอื่นไปแล้ว', en:'This checkpoint was already deleted by someone else' },
+    saved_demo:{ th:'บันทึกแล้ว (โหมดทดลอง)', en:'Saved (demo mode)' },
+    added_demo:{ th:'เพิ่ม checkpoint แล้ว (โหมดทดลอง)', en:'Checkpoint added (demo mode)' },
+    saved:{ th:'บันทึกแล้ว', en:'Saved' },
+    added:{ th:'เพิ่ม checkpoint แล้ว', en:'Checkpoint added' },
+    save_failed:{ th:'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง', en:'Couldn’t save. Please try again.' },
+    need_title_toast:{ th:'ใส่ชื่อ checkpoint ก่อน', en:'Enter a checkpoint title first' },
+    confirm_delete_cp_title:{ th:'ลบ checkpoint นี้?', en:'Delete this checkpoint?' },
+    confirm_delete_cp_kids:{ th:'{title} มี sub-checkpoint อีก {n} รายการ — ทั้งกิ่งจะถูกลบไปด้วย', en:'{title} has {n} more sub-checkpoints — the whole branch will be deleted too.' },
+    confirm_delete_cp_single:{ th:'{title} จะถูกลบถาวร', en:'{title} will be permanently deleted.' },
+    delete_branch_ok:{ th:'ลบทั้งกิ่ง', en:'Delete branch' },
+    deleted_demo:{ th:'ลบแล้ว (โหมดทดลอง)', en:'Deleted (demo mode)' },
+    deleted:{ th:'ลบแล้ว', en:'Deleted' },
+
+    cancel:{ th:'ยกเลิก', en:'Cancel' },
+
+    new_project_kicker:{ th:'โปรเจกต์ใหม่', en:'New project' },
+    new_project_title:{ th:'เพิ่มโปรเจกต์', en:'Add project' },
+    new_project_lead:{ th:'ตั้งชื่อโปรเจกต์ แล้วเลือกเทมเพลตเริ่มต้นได้ (ไม่เลือกก็เริ่มจากศูนย์ได้)', en:'Name your project, then optionally pick a starter template (or start from scratch).' },
+    np_name_ph:{ th:'เช่น เปิดตัวเว็บไซต์ Q3', en:'e.g. Launch website Q3' },
+    tpl_blank_label:{ th:'⬜️ ว่างเปล่า', en:'⬜️ Blank' },
+    tpl_blank_desc:{ th:'เริ่มจากศูนย์', en:'Start from scratch' },
+    tpl_starter_count:{ th:'checkpoint เริ่มต้น', en:'starter checkpoints' },
+    ai_section_label:{ th:'✨ Premium — ให้ AI ช่วยสร้าง', en:'✨ Premium — Generate with AI' },
+    ai_prompt_ph:{ th:'อธิบายธุรกิจหรือโปรเจกต์สั้น ๆ เช่น ร้านเบเกอรี่โฮมเมดเปิดใหม่แถวมหาวิทยาลัย', en:'Briefly describe your business or project, e.g. a new homemade bakery near a university' },
+    ai_generate_btn:{ th:'สร้างด้วย AI', en:'Generate with AI' },
+    ai_generating:{ th:'กำลังสร้าง...', en:'Generating...' },
+    ai_generated_status:{ th:'AI สร้างแผนผังไว้แล้ว ({n} checkpoint) ✅', en:'AI generated {n} checkpoints ✅' },
+    ai_empty_prompt_toast:{ th:'อธิบายธุรกิจ/โปรเจกต์ก่อนสร้างด้วย AI', en:'Describe your business/project before generating with AI' },
+    ai_failed_toast:{ th:'สร้างด้วย AI ไม่สำเร็จ ลองใหม่อีกครั้ง', en:'AI generation failed. Please try again.' },
+    need_name_toast:{ th:'ใส่ชื่อโปรเจกต์ก่อน', en:'Enter a project name first' },
+    project_created_demo:{ th:'สร้างโปรเจกต์แล้ว (โหมดทดลอง)', en:'Project created (demo mode)' },
+    project_created:{ th:'สร้างโปรเจกต์แล้ว', en:'Project created' },
+    create:{ th:'สร้าง', en:'Create' },
+
+    team_members_kicker:{ th:'สมาชิกทีม', en:'Team members' },
+    team_members_title:{ th:'สมาชิกทีม', en:'Team members' },
+    team_lead:{ th:'เพิ่มอีเมล (Gmail) ของทีม — คนที่ล็อกอินด้วยอีเมลนี้จะเห็นและแก้ไขโปรเจกต์นี้ได้', en:'Add your team’s email (Gmail) — anyone who logs in with this email can view and edit this project.' },
+    team_lead_readonly_suffix:{ th:' (เฉพาะเจ้าของโปรเจกต์เท่านั้นที่จัดการทีมได้)', en:' (only the project owner can manage the team)' },
+    team_email_ph:{ th:'อีเมล (Gmail)', en:'Email (Gmail)' },
+    add:{ th:'เพิ่ม', en:'Add' },
+    remove_aria:{ th:'ลบ', en:'Remove' },
+    team_empty_owner:{ th:'ยังไม่มีสมาชิก — เพิ่มอีเมลด้านบนได้เลย', en:'No members yet — add an email above' },
+    team_empty_readonly:{ th:'ยังไม่มีสมาชิก', en:'No members yet' },
+    done_btn:{ th:'เสร็จสิ้น', en:'Done' },
+    invalid_email_toast:{ th:'ใส่อีเมลให้ถูกต้อง เช่น name@gmail.com', en:'Enter a valid email, e.g. name@gmail.com' },
+    email_exists_toast:{ th:'มีอีเมลนี้อยู่แล้ว', en:'This email is already added' },
+    team_save_failed_toast:{ th:'บันทึกรายชื่อไม่สำเร็จ', en:'Couldn’t save the member' },
+    team_remove_failed_toast:{ th:'ลบไม่สำเร็จ', en:'Couldn’t remove' },
+
+    tour_skip:{ th:'ข้าม', en:'Skip' },
+    tour_next:{ th:'ถัดไป', en:'Next' },
+    tour_finish:{ th:'เสร็จสิ้น', en:'Done' },
+    demo_mode_eyebrow:{ th:'โหมดทดลอง', en:'Demo mode' },
+
+    ask_ai_btn:{ th:'ถาม AI', en:'Ask AI' },
+    ask_ai_project_btn:{ th:'ถาม AI เกี่ยวกับโปรเจกต์', en:'Ask AI about this project' },
+    ask_ai_ph:{ th:'ถามเกี่ยวกับ checkpoint นี้ เช่น ควรเริ่มยังไงดี', en:'Ask about this checkpoint, e.g. how should I start?' },
+    ask_ai_project_ph:{ th:'ถามเกี่ยวกับโปรเจกต์นี้ เช่น ควรทำอะไรก่อน', en:'Ask about this project, e.g. what should I do first?' },
+    ask_ai_asking:{ th:'กำลังถาม AI...', en:'Asking AI...' },
+    ask_ai_failed:{ th:'ถาม AI ไม่สำเร็จ ลองใหม่อีกครั้ง', en:'Asking AI failed. Please try again.' },
+
+    analytics_title:{ th:'แดชบอร์ดสรุป', en:'Analytics dashboard' },
+    analytics_lead:{ th:'ภาพรวมความคืบหน้าของทุกโปรเจกต์ที่คุณเข้าถึงได้', en:'An overview of progress across every project you have access to.' },
+    analytics_total_checkpoints:{ th:'checkpoint ทั้งหมด', en:'Total checkpoints' },
+    analytics_done:{ th:'เสร็จแล้ว', en:'Done' },
+    analytics_in_progress:{ th:'กำลังทำ', en:'In progress' },
+    analytics_todo:{ th:'รอเริ่ม', en:'To do' },
+    analytics_by_project:{ th:'แยกตามโปรเจกต์', en:'By project' },
+    analytics_by_assignee:{ th:'ภาระงานต่อคน', en:'Workload by assignee' },
+    analytics_unassigned:{ th:'ยังไม่ระบุ', en:'Unassigned' }
+  };
+
+  function t(key){
+    const e = STRINGS[key];
+    if(!e){ return key; }
+    return e[state.lang] || e.th;
+  }
+  function setLang(lang){
+    state.lang = (lang === 'en') ? 'en' : 'th';
+    localStorage.setItem('milemaps-lang', state.lang);
+    applyLang();
+    if(state.view === 'dash') refreshDash();
+    else if(state.view === 'map') renderMap();
+  }
+  function applyLang(){
+    document.documentElement.lang = state.lang;
+    document.title = t('doc_title');
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.innerHTML = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+    document.querySelectorAll('.lang-toggle [data-lang]').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
+    });
+    Object.keys(STATUS).forEach(k => {
+      const legendEl = document.getElementById('legend-' + k);
+      if(legendEl) legendEl.textContent = STATUS[k][state.lang] || STATUS[k].th;
+      const fsEl = document.getElementById('fs-' + k);
+      if(fsEl) fsEl.textContent = STATUS[k][state.lang] || STATUS[k].th;
+    });
+    const signOutLabel = t(state.demo ? 'save_with_account' : 'sign_out');
+    const dashSignout = document.getElementById('dash-signout');
+    const mapSignout = document.getElementById('map-signout');
+    if(dashSignout) dashSignout.textContent = signOutLabel;
+    if(mapSignout) mapSignout.textContent = signOutLabel;
+    if(state.demo){
+      document.querySelectorAll('.topbar .eyebrow').forEach(el => { el.textContent = t('demo_mode_eyebrow'); });
+    }
+  }
 
   function show(v){
     state.view = v;
@@ -709,12 +979,12 @@
     const f = $('#modal-body input');
     if(f) setTimeout(()=>f.focus(), 60);
   }
-  function confirmBox({title, text, ok='ลบ', onOk}){
+  function confirmBox({title, text, ok, onOk}){
     openModal(
       `<h2>${esc(title)}</h2><p>${text}</p>`,
       [
-        { label:'ยกเลิก <span class="en">Cancel</span>', onClick: closeOverlays },
-        { label:esc(ok) + ' <span class="en">Confirm</span>', kind:'danger', onClick: async ()=>{ closeOverlays(); await onOk(); } }
+        { label: esc(t('cancel')), onClick: closeOverlays },
+        { label: esc(ok || t('delete')), kind:'danger', onClick: async ()=>{ closeOverlays(); await onOk(); } }
       ]
     );
   }
@@ -759,16 +1029,16 @@
     if(!items.length){ box.hidden = true; box.innerHTML = ''; return; }
     box.hidden = false;
     box.innerHTML = `
-      <div class="eyebrow">Assigned to me</div>
-      <strong style="font-weight:600">งานที่ได้รับมอบหมาย</strong>
+      <div class="eyebrow">${esc(t('assigned_to_me_kicker'))}</div>
+      <strong style="font-weight:600">${esc(t('assigned_to_me_title'))}</strong>
       <div class="task-list">
-        ${items.map(t => {
-          const st = STATUS[t.status] || STATUS.todo;
+        ${items.map(task => {
+          const st = STATUS[task.status] || STATUS.todo;
           return `
-            <div class="task-row" data-pid="${esc(t.project_id)}">
+            <div class="task-row" data-pid="${esc(task.project_id)}">
               <span class="sdot" style="background:${st.color}"></span>
-              <span class="t-title">${esc(t.title)}</span>
-              <span class="t-proj">${esc(t.projects ? t.projects.name : '')}</span>
+              <span class="t-title">${esc(task.title)}</span>
+              <span class="t-proj">${esc(task.projects ? task.projects.name : '')}</span>
             </div>`;
         }).join('')}
       </div>`;
@@ -782,17 +1052,17 @@
     renderMyTasks(myTasks);
   }
 
-  function stamp(sel){ $(sel).textContent = 'อัพเดตล่าสุด ' + fmtTime(Date.now()); }
+  function stamp(sel){ $(sel).textContent = t('updated_at_prefix') + ' ' + fmtTime(Date.now()); }
 
   function renderDash(items){
     const box = $('#dash-content');
     if(!items.length){
       box.innerHTML = `
         <div class="empty">
-          <div class="eyebrow">No projects yet</div>
-          <h3>ยังไม่มีโปรเจกต์</h3>
-          <p>เริ่มจากโปรเจกต์แรกของทีม แล้วค่อยแตก checkpoint ในหน้า mind map</p>
-          <button class="btn btn-primary" data-new>+ เพิ่มโปรเจกต์</button>
+          <div class="eyebrow">${esc(t('no_projects_kicker'))}</div>
+          <h3>${esc(t('no_projects_title'))}</h3>
+          <p>${esc(t('no_projects_p'))}</p>
+          <button class="btn btn-primary" data-new>${esc(t('new_project_btn'))}</button>
         </div>`;
       box.querySelector('[data-new]').onclick = newProjectModal;
       return;
@@ -801,12 +1071,12 @@
       const pct = p.total ? Math.round(p.done / p.total * 100) : 0;
       return `
         <article class="card" data-id="${esc(p.id)}" tabindex="0" role="button">
-          <button class="del" data-del="${esc(p.id)}" aria-label="ลบโปรเจกต์ Delete">✕</button>
+          <button class="del" data-del="${esc(p.id)}" aria-label="${esc(t('delete_project_aria'))}">✕</button>
           <h3>${esc(p.name)}</h3>
-          <div class="meta">สร้างเมื่อ ${esc(fmtDate(p.createdAt))}</div>
+          <div class="meta">${esc(t('created_on'))} ${esc(fmtDate(p.createdAt))}</div>
           <div class="prog-label">
-            <span>เสร็จแล้ว <b>${p.done}/${p.total}</b></span>
-            <span class="en">${pct}%</span>
+            <span>${esc(t('done_count'))} <b>${p.done}/${p.total}</b></span>
+            <span>${pct}%</span>
           </div>
           <div class="bar"><span style="width:${pct}%"></span></div>
         </article>`;
@@ -822,28 +1092,99 @@
         e.stopPropagation();
         const p = items.find(x => x.id === b.dataset.del);
         confirmBox({
-          title:'ลบโปรเจกต์นี้?',
-          text:`<b>${esc(p.name)}</b> และ checkpoint ทั้งหมดจะถูกลบถาวร และทุกคนในทีมจะไม่เห็นโปรเจกต์นี้อีก`,
-          ok:'ลบโปรเจกต์',
+          title: t('confirm_delete_project_title'),
+          text: t('confirm_delete_project_text').replace('{name}', `<b>${esc(p.name)}</b>`),
+          ok: t('delete_project_ok'),
           onOk: async () => {
             if(state.demo){
               demoStore.projects = demoStore.projects.filter(x => x.id !== p.id);
               delete demoStore.data[p.id];
-              toast('ลบโปรเจกต์แล้ว (โหมดทดลอง) · Deleted');
+              toast(t('project_deleted_demo'));
               await refreshDash();
               return;
             }
             try{
               const { error } = await sb.from('projects').delete().eq('id', p.id); // cascades checkpoints + team
               if(error) throw error;
-              toast('ลบโปรเจกต์แล้ว · Deleted');
+              toast(t('project_deleted'));
               await refreshDash();
-            }catch(err){ toast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+            }catch(err){ toast(t('delete_failed_retry')); }
           }
         });
       };
     });
   }
+
+  /* ============ analytics dashboard ============ */
+  async function loadAnalytics(){
+    let projects, rows;
+    if(state.demo){
+      projects = demoStore.projects;
+      rows = projects.flatMap(p => ((demoStore.data[p.id] && demoStore.data[p.id].checkpoints) || [])
+        .map(c => ({ project_id:p.id, project_name:p.name, status:c.status, assignee:c.assignee })));
+    }else{
+      const { data: ps, error } = await sb.from('projects').select('id,name').order('created_at', { ascending:false });
+      if(error){ toast(t('load_failed')); return; }
+      projects = ps || [];
+      const perProject = await Promise.all(projects.map(async p => {
+        const { data: cps } = await sb.from('checkpoints').select('status,assignee').eq('project_id', p.id);
+        return (cps || []).map(c => ({ project_id:p.id, project_name:p.name, status:c.status, assignee:c.assignee }));
+      }));
+      rows = perProject.flat();
+    }
+    renderAnalytics(projects, rows);
+  }
+
+  function renderAnalytics(projects, rows){
+    const done = rows.filter(r => r.status === 'done').length;
+    const inProgress = rows.filter(r => r.status === 'in_progress').length;
+    const todo = rows.filter(r => r.status === 'todo').length;
+
+    const byProject = projects.map(p => {
+      const prows = rows.filter(r => r.project_id === p.id);
+      return { id:p.id, name:p.name, total:prows.length, done: prows.filter(r => r.status === 'done').length };
+    });
+
+    const byAssignee = new Map();
+    rows.forEach(r => {
+      const key = r.assignee || '';
+      if(!byAssignee.has(key)) byAssignee.set(key, { total:0, done:0 });
+      const e = byAssignee.get(key);
+      e.total++; if(r.status === 'done') e.done++;
+    });
+    const assigneeRows = [...byAssignee.entries()].sort((a,b) => b[1].total - a[1].total);
+
+    $('#analytics-content').innerHTML = `
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:28px">
+        <div class="card" style="cursor:default"><div class="meta">${esc(t('analytics_total_checkpoints'))}</div><h3>${rows.length}</h3></div>
+        <div class="card" style="cursor:default"><div class="meta">${esc(t('analytics_done'))}</div><h3>${done}</h3></div>
+        <div class="card" style="cursor:default"><div class="meta">${esc(t('analytics_in_progress'))}</div><h3>${inProgress}</h3></div>
+        <div class="card" style="cursor:default"><div class="meta">${esc(t('analytics_todo'))}</div><h3>${todo}</h3></div>
+      </div>
+      <h3 style="margin-bottom:12px;font-size:15px">${esc(t('analytics_by_project'))}</h3>
+      <div class="team-list" style="margin-bottom:28px">
+        ${byProject.length ? byProject.map(p => {
+          const pct = p.total ? Math.round(p.done / p.total * 100) : 0;
+          return `<div class="team-row" data-pid="${esc(p.id)}" style="cursor:pointer"><span>${esc(p.name)}</span><span class="muted">${p.done}/${p.total} · ${pct}%</span></div>`;
+        }).join('') : `<div class="muted" style="padding:14px 2px">${esc(t('no_projects_title'))}</div>`}
+      </div>
+      <h3 style="margin-bottom:12px;font-size:15px">${esc(t('analytics_by_assignee'))}</h3>
+      <div class="team-list">
+        ${assigneeRows.length ? assigneeRows.map(([email, s]) => `
+          <div class="team-row"><span>${esc(email || t('analytics_unassigned'))}</span><span class="muted">${s.done}/${s.total}</span></div>
+        `).join('') : `<div class="muted" style="padding:14px 2px">${esc(t('no_projects_title'))}</div>`}
+      </div>`;
+    $('#analytics-content').querySelectorAll('[data-pid]').forEach(row => {
+      row.onclick = () => openProject(row.dataset.pid);
+    });
+  }
+
+  function openAnalytics(){
+    show('analytics');
+    loadAnalytics();
+  }
+  $('#dash-analytics-btn').onclick = openAnalytics;
+  $('#btn-analytics-back').onclick = () => show('dash');
 
   function newProjectModal(){
     let selectedTpl = 'blank';
@@ -852,44 +1193,44 @@
     const tplGrid = `
       <div class="tpl-grid" id="tpl-grid">
         <button type="button" class="tpl-card" data-tpl="blank" aria-pressed="true">
-          <b>⬜️ ว่างเปล่า</b><span>เริ่มจากศูนย์</span>
+          <b>${esc(t('tpl_blank_label'))}</b><span>${esc(t('tpl_blank_desc'))}</span>
         </button>
-        ${tplEntries.map(([k,t]) => `
+        ${tplEntries.map(([k,tpl]) => `
           <button type="button" class="tpl-card" data-tpl="${k}" aria-pressed="false">
-            <b>${t.emoji} ${esc(t.label)}</b><span>${t.tree.length} checkpoint เริ่มต้น</span>
+            <b>${tpl.emoji} ${esc(tpl.label[state.lang] || tpl.label.th)}</b><span>${tpl.tree.length} ${esc(t('tpl_starter_count'))}</span>
           </button>`).join('')}
       </div>`;
 
     /* โหมดทดลองไม่มี session ให้ยิงเข้า Edge Function ได้ เลยซ่อนตัวเลือก AI ไปเลย */
     const aiSection = state.demo ? '' : `
       <div class="field" style="margin-top:16px">
-        <label>✨ Premium — ให้ AI ช่วยสร้าง <span class="en">AI generate</span></label>
-        <textarea id="ai-prompt" maxlength="300" placeholder="อธิบายธุรกิจหรือโปรเจกต์สั้น ๆ เช่น ร้านเบเกอรี่โฮมเมดเปิดใหม่แถวมหาวิทยาลัย" style="min-height:56px"></textarea>
+        <label>${esc(t('ai_section_label'))}</label>
+        <textarea id="ai-prompt" maxlength="300" placeholder="${esc(t('ai_prompt_ph'))}" style="min-height:56px"></textarea>
         <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-          <button type="button" class="btn btn-sm" id="ai-generate">สร้างด้วย AI</button>
+          <button type="button" class="btn btn-sm" id="ai-generate">${esc(t('ai_generate_btn'))}</button>
           <span class="muted" id="ai-status"></span>
         </div>
       </div>`;
 
     openModal(
-      `<div class="eyebrow">New project</div>
-       <h2>เพิ่มโปรเจกต์</h2>
-       <p>ตั้งชื่อโปรเจกต์ แล้วเลือกเทมเพลตเริ่มต้นได้ (ไม่เลือกก็เริ่มจากศูนย์ได้)</p>
-       <div class="field"><input type="text" id="np-name" maxlength="80" placeholder="เช่น เปิดตัวเว็บไซต์ Q3" /></div>
+      `<div class="eyebrow">${esc(t('new_project_kicker'))}</div>
+       <h2>${esc(t('new_project_title'))}</h2>
+       <p>${esc(t('new_project_lead'))}</p>
+       <div class="field"><input type="text" id="np-name" maxlength="80" placeholder="${esc(t('np_name_ph'))}" /></div>
        ${tplGrid}
        ${aiSection}`,
       [
-        { label:'ยกเลิก <span class="en">Cancel</span>', onClick: closeOverlays },
-        { label:'สร้าง <span class="en">Create</span>', kind:'primary', onClick: async () => {
+        { label: esc(t('cancel')), onClick: closeOverlays },
+        { label: esc(t('create')), kind:'primary', onClick: async () => {
             const name = ($('#np-name').value || '').trim();
-            if(!name){ toast('ใส่ชื่อโปรเจกต์ก่อน'); return; }
+            if(!name){ toast(t('need_name_toast')); return; }
             if(state.demo){
               const id = demoId();
               demoStore.projects.unshift({ id, name, createdAt: Date.now() });
               demoStore.data[id] = { name, team:[], checkpoints:[] };
               if(selectedTpl !== 'blank') applyTemplateLocal(id, selectedTpl);
               closeOverlays();
-              toast('สร้างโปรเจกต์แล้ว (โหมดทดลอง) · Created');
+              toast(t('project_created_demo'));
               openProject(id);
               return;
             }
@@ -899,9 +1240,9 @@
               if(selectedTpl === 'ai' && aiTree) await insertTree(data.id, aiTree);
               else if(selectedTpl !== 'blank') await applyTemplate(data.id, selectedTpl);
               closeOverlays();
-              toast('สร้างโปรเจกต์แล้ว · Created');
+              toast(t('project_created'));
               openProject(data.id);
-            }catch(err){ toast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+            }catch(err){ toast(t('save_failed')); }
           }
         }
       ]
@@ -918,19 +1259,19 @@
     if(aiBtn){
       aiBtn.onclick = async () => {
         const prompt = ($('#ai-prompt').value || '').trim();
-        if(!prompt){ toast('อธิบายธุรกิจ/โปรเจกต์ก่อนสร้างด้วย AI'); return; }
+        if(!prompt){ toast(t('ai_empty_prompt_toast')); return; }
         aiBtn.disabled = true;
-        $('#ai-status').textContent = 'กำลังสร้าง...';
+        $('#ai-status').textContent = t('ai_generating');
         try{
           const { data, error } = await sb.functions.invoke('generate-map', { body: { prompt } });
           if(error) throw error;
           aiTree = (data && data.nodes) || [];
           selectedTpl = 'ai';
           $('#tpl-grid').querySelectorAll('[data-tpl]').forEach(x => x.setAttribute('aria-pressed', 'false'));
-          $('#ai-status').textContent = `AI สร้างแผนผังไว้แล้ว (${aiTree.length} checkpoint) ✅`;
+          $('#ai-status').textContent = t('ai_generated_status').replace('{n}', aiTree.length);
         }catch(err){
           $('#ai-status').textContent = '';
-          toast('สร้างด้วย AI ไม่สำเร็จ ลองใหม่อีกครั้ง');
+          toast(t('ai_failed_toast'));
         }finally{
           aiBtn.disabled = false;
         }
@@ -1005,7 +1346,7 @@
       const p = positions.get(c.id); if(!p) return;
       const st = STATUS[c.status] || STATUS.todo;
       const hasA = !!c.assignee;
-      const title = fit(c.title || '(ไม่มีชื่อ)', 13, 500)(NW - 44);
+      const title = fit(c.title || t('untitled_node'), 13, 500)(NW - 44);
       const who = hasA ? fit(c.assignee, 10, 400)(NW - 44) : '';
       const ty = hasA ? -3 : 4;
       nodes += `
@@ -1035,7 +1376,12 @@
   }
 
   function currentProjectName(){
-    return state.project.name || 'โปรเจกต์';
+    return state.project.name || t('default_project_name');
+  }
+
+  function isProjectOwner(){
+    if(state.demo) return true;
+    return !!(state.user && state.project.createdBy && state.project.createdBy === state.user.id);
   }
 
   function applyView(){
@@ -1122,7 +1468,7 @@
   /* ============ project load ============ */
   async function loadProject(silent){
     const [{ data: proj, error: e1 }, { data: cps, error: e2 }, { data: team, error: e3 }] = await Promise.all([
-      sb.from('projects').select('id,name').eq('id', state.pid).single(),
+      sb.from('projects').select('id,name,created_by').eq('id', state.pid).single(),
       sb.from('checkpoints').select('*').eq('project_id', state.pid).order('created_at'),
       sb.from('project_team').select('name').eq('project_id', state.pid)
     ]);
@@ -1130,6 +1476,7 @@
     if(e2) throw e2;
     state.project = {
       name: proj ? proj.name : 'โปรเจกต์',
+      createdBy: proj ? proj.created_by : null,
       team: (team || []).map(t => t.name),
       checkpoints: (cps || []).map(normalizeCheckpoint)
     };
@@ -1176,15 +1523,20 @@
     document.querySelectorAll('.node.sel').forEach(n => n.classList.remove('sel'));
     if(id){ const g = vp.querySelector(`.node[data-id="${CSS.escape(id)}"]`); if(g) g.classList.add('sel'); }
 
-    $('#panel-kicker').textContent = id ? 'Edit checkpoint' : 'New checkpoint';
-    $('#panel-title').textContent = id ? 'แก้ไข checkpoint' : 'เพิ่ม checkpoint';
+    $('#panel-kicker').textContent = t(id ? 'panel_kicker_edit' : 'panel_kicker_new');
+    $('#panel-title').textContent = t(id ? 'panel_title_edit' : 'panel_title_new');
     const par = state.editing.parentId ? cps.find(c => c.id === state.editing.parentId) : null;
     $('#panel-crumb').textContent = par
-      ? 'แตกกิ่งจาก · under: ' + par.title
-      : 'ระดับบนสุด · top level';
+      ? t('panel_crumb_branch') + ' ' + par.title
+      : t('panel_crumb_top');
 
     $('#f-title').value = cp ? (cp.title || '') : '';
     $('#f-note').value = cp ? (cp.note || '') : '';
+    $('#f-doc-url').value = cp ? (cp.docUrl || '') : '';
+    updateDocOpenLink();
+    $('#cp-ai-question').value = '';
+    $('#cp-ai-status').textContent = '';
+    $('#cp-ai-answer').textContent = '';
     setStatus(cp ? (cp.status || 'todo') : 'todo');
     fillAssignees(cp ? cp.assignee : '');
     $('#panel-delete').style.display = id ? '' : 'none';
@@ -1193,6 +1545,41 @@
     $('#scrim').classList.add('on');
     setTimeout(() => $('#f-title').focus(), 80);
   }
+
+  function updateDocOpenLink(){
+    const url = $('#f-doc-url').value.trim();
+    const link = $('#f-doc-open');
+    if(url){ link.href = url; link.style.display = ''; } else { link.style.display = 'none'; }
+  }
+  $('#f-doc-url').addEventListener('input', updateDocOpenLink);
+
+  $('#cp-ask-ai').onclick = async () => {
+    const question = $('#cp-ai-question').value.trim();
+    if(!question) return;
+    const btn = $('#cp-ask-ai');
+    btn.disabled = true;
+    $('#cp-ai-status').textContent = t('ask_ai_asking');
+    $('#cp-ai-answer').textContent = '';
+    const cp = state.editing && state.editing.id ? state.project.checkpoints.find(c => c.id === state.editing.id) : null;
+    const parent = cp && cp.parentId ? state.project.checkpoints.find(c => c.id === cp.parentId) : null;
+    const context = [
+      `Project: ${currentProjectName()}`,
+      `Checkpoint: ${$('#f-title').value.trim() || '(untitled)'} (status: ${state.draftStatus})`,
+      $('#f-note').value.trim() ? `Note: ${$('#f-note').value.trim()}` : '',
+      parent ? `Parent checkpoint: ${parent.title}` : ''
+    ].filter(Boolean).join('\n');
+    try{
+      const { data, error } = await sb.functions.invoke('ask-gemini', { body: { context, question, lang: state.lang } });
+      if(error) throw error;
+      $('#cp-ai-status').textContent = '';
+      $('#cp-ai-answer').textContent = (data && data.answer) || '';
+    }catch(err){
+      $('#cp-ai-status').textContent = '';
+      toast(t('ask_ai_failed'));
+    }finally{
+      btn.disabled = false;
+    }
+  };
 
   function setStatus(v){
     state.draftStatus = STATUS[v] ? v : 'todo';
@@ -1204,7 +1591,7 @@
   function fillAssignees(current){
     const sel = $('#f-assignee');
     const names = [...new Set([...(state.project.team || []), ...(current ? [current] : [])])];
-    sel.innerHTML = '<option value="">— ยังไม่ระบุ · Unassigned —</option>' +
+    sel.innerHTML = `<option value="">${esc(t('unassigned_opt'))}</option>` +
       names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
     sel.value = current || '';
   }
@@ -1215,13 +1602,14 @@
 
   $('#panel-save').onclick = async () => {
     const title = $('#f-title').value.trim();
-    if(!title){ toast('ใส่ชื่อ checkpoint ก่อน'); return; }
+    if(!title){ toast(t('need_title_toast')); return; }
     const ed = state.editing;
     const patch = {
       title,
       status: state.draftStatus,
       assignee: $('#f-assignee').value || '',
-      note: $('#f-note').value.trim()
+      note: $('#f-note').value.trim(),
+      docUrl: $('#f-doc-url').value.trim()
     };
     if(state.demo){
       if(ed.id){
@@ -1233,18 +1621,19 @@
       closeOverlays();
       renderMap();
       stamp('#map-sync');
-      toast(ed.id ? 'บันทึกแล้ว (โหมดทดลอง) · Saved' : 'เพิ่ม checkpoint แล้ว (โหมดทดลอง) · Added');
+      toast(t(ed.id ? 'saved_demo' : 'added_demo'));
       return;
     }
+    const dbPatch = { title, status: patch.status, assignee: patch.assignee, note: patch.note, doc_url: patch.docUrl };
     try{
       if(ed.id){
-        const { data, error } = await sb.from('checkpoints').update(patch).eq('id', ed.id).select().single();
-        if(error){ toast('checkpoint นี้ถูกลบโดยคนอื่นไปแล้ว'); closeOverlays(); await loadProject(true); return; }
+        const { data, error } = await sb.from('checkpoints').update(dbPatch).eq('id', ed.id).select().single();
+        if(error){ toast(t('checkpoint_taken_toast')); closeOverlays(); await loadProject(true); return; }
         const i = state.project.checkpoints.findIndex(c => c.id === ed.id);
         if(i > -1) state.project.checkpoints[i] = normalizeCheckpoint(data);
       }else{
         const { data, error } = await sb.from('checkpoints')
-          .insert({ project_id: state.pid, parent_id: ed.parentId || null, ...patch })
+          .insert({ project_id: state.pid, parent_id: ed.parentId || null, ...dbPatch })
           .select().single();
         if(error) throw error;
         state.project.checkpoints.push(normalizeCheckpoint(data));
@@ -1252,8 +1641,8 @@
       closeOverlays();
       renderMap();
       stamp('#map-sync');
-      toast(ed.id ? 'บันทึกแล้ว · Saved' : 'เพิ่ม checkpoint แล้ว · Added');
-    }catch(err){ toast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+      toast(t(ed.id ? 'saved' : 'added'));
+    }catch(err){ toast(t('save_failed')); }
   };
 
   $('#panel-delete').onclick = () => {
@@ -1263,18 +1652,18 @@
     const cp = state.project.checkpoints.find(c => c.id === id);
     $('#panel').classList.remove('on');
     confirmBox({
-      title:'ลบ checkpoint นี้?',
+      title: t('confirm_delete_cp_title'),
       text: kidCount
-        ? `<b>${esc(cp.title)}</b> มี sub-checkpoint อีก <b>${kidCount}</b> รายการ — ทั้งกิ่งจะถูกลบไปด้วย`
-        : `<b>${esc(cp.title)}</b> จะถูกลบถาวร`,
-      ok:'ลบทั้งกิ่ง',
+        ? t('confirm_delete_cp_kids').replace('{title}', `<b>${esc(cp.title)}</b>`).replace('{n}', `<b>${kidCount}</b>`)
+        : t('confirm_delete_cp_single').replace('{title}', `<b>${esc(cp.title)}</b>`),
+      ok: t('delete_branch_ok'),
       onOk: async () => {
         if(state.demo){
           const kill = new Set(ids);
           state.project.checkpoints = state.project.checkpoints.filter(c => !kill.has(c.id));
           renderMap();
           stamp('#map-sync');
-          toast('ลบแล้ว (โหมดทดลอง) · Deleted');
+          toast(t('deleted_demo'));
           return;
         }
         try{
@@ -1284,8 +1673,8 @@
           state.project.checkpoints = state.project.checkpoints.filter(c => !kill.has(c.id));
           renderMap();
           stamp('#map-sync');
-          toast('ลบแล้ว · Deleted');
-        }catch(err){ toast('ลบไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+          toast(t('deleted'));
+        }catch(err){ toast(t('delete_failed_retry')); }
       }
     });
   };
@@ -1294,27 +1683,30 @@
   function teamModal(){
     const render = () => {
       const list = state.project.team || [];
+      const owner = isProjectOwner();
       openModal(
-        `<div class="eyebrow">Team members</div>
-         <h2>สมาชิกทีม</h2>
-         <p>เพิ่มอีเมล (Gmail) ของทีม — คนที่ล็อกอินด้วยอีเมลนี้จะเห็น checkpoint ที่มอบหมายให้เขาในหน้าแรกของเขาเองด้วย</p>
+        `<div class="eyebrow">${esc(t('team_members_kicker'))}</div>
+         <h2>${esc(t('team_members_title'))}</h2>
+         <p>${esc(t('team_lead'))}${owner ? '' : esc(t('team_lead_readonly_suffix'))}</p>
+         ${owner ? `
          <div class="row">
-           <input type="email" id="tm-name" maxlength="60" placeholder="อีเมล (Gmail) · Email" />
-           <button class="btn btn-primary" id="tm-add">เพิ่ม</button>
-         </div>
+           <input type="email" id="tm-name" maxlength="60" placeholder="${esc(t('team_email_ph'))}" />
+           <button class="btn btn-primary" id="tm-add">${esc(t('add'))}</button>
+         </div>` : ''}
          <div class="team-list">
            ${list.length ? list.map(n => `
              <div class="team-row"><span>${esc(n)}</span>
-               <button data-rm="${esc(n)}" aria-label="ลบ Remove">✕</button></div>`).join('')
-             : '<div class="muted" style="padding:14px 2px">ยังไม่มีสมาชิก — เพิ่มชื่อด้านบนได้เลย</div>'}
+               ${owner ? `<button data-rm="${esc(n)}" aria-label="${esc(t('remove_aria'))}">✕</button>` : ''}</div>`).join('')
+             : '<div class="muted" style="padding:14px 2px">' + esc(t(owner ? 'team_empty_owner' : 'team_empty_readonly')) + '</div>'}
          </div>`,
-        [{ label:'เสร็จสิ้น <span class="en">Done</span>', kind:'primary', onClick: () => { closeOverlays(); renderMap(); } }]
+        [{ label: esc(t('done_btn')), kind:'primary', onClick: () => { closeOverlays(); renderMap(); } }]
       );
+      if(!owner) return;
       $('#tm-add').onclick = async () => {
         const n = $('#tm-name').value.trim().toLowerCase();
         if(!n) return;
-        if(!n.includes('@') || !n.includes('.')){ toast('ใส่อีเมลให้ถูกต้อง เช่น name@gmail.com'); return; }
-        if((state.project.team || []).includes(n)){ toast('มีอีเมลนี้อยู่แล้ว'); return; }
+        if(!n.includes('@') || !n.includes('.')){ toast(t('invalid_email_toast')); return; }
+        if((state.project.team || []).includes(n)){ toast(t('email_exists_toast')); return; }
         if(state.demo){
           state.project.team = [...(state.project.team || []), n];
           render();
@@ -1325,7 +1717,7 @@
           if(error) throw error;
           state.project.team = [...(state.project.team || []), n];
           render();
-        }catch(err){ toast('บันทึกรายชื่อไม่สำเร็จ'); }
+        }catch(err){ toast(t('team_save_failed_toast')); }
       };
       $('#tm-name').onkeydown = e => { if(e.key === 'Enter') $('#tm-add').click(); };
       document.querySelectorAll('[data-rm]').forEach(b => {
@@ -1340,7 +1732,7 @@
             if(error) throw error;
             state.project.team = (state.project.team || []).filter(x => x !== b.dataset.rm);
             render();
-          }catch(err){ toast('ลบไม่สำเร็จ'); }
+          }catch(err){ toast(t('team_remove_failed_toast')); }
         };
       });
     };
@@ -1387,6 +1779,40 @@
   $('#map-refresh').onclick = () => loadProject(true);
   $('#btn-new-cp').onclick = () => openEditor(null, null);
   $('#btn-team').onclick = teamModal;
+  $('#btn-ask-ai-project').onclick = askAiProjectModal;
+
+  function askAiProjectModal(){
+    openModal(
+      `<div class="eyebrow">${esc(t('mind_map_kicker'))}</div>
+       <h2>${esc(t('ask_ai_project_btn'))}</h2>
+       <div class="field">
+         <textarea id="proj-ai-question" maxlength="300" placeholder="${esc(t('ask_ai_project_ph'))}" style="min-height:70px"></textarea>
+       </div>
+       <div class="muted" id="proj-ai-status" style="margin-top:8px"></div>
+       <div class="muted" id="proj-ai-answer" style="margin-top:8px;white-space:pre-wrap"></div>`,
+      [
+        { label: esc(t('cancel')), onClick: closeOverlays },
+        { label: esc(t('ask_ai_btn')), kind:'primary', onClick: async () => {
+            const question = $('#proj-ai-question').value.trim();
+            if(!question) return;
+            $('#proj-ai-status').textContent = t('ask_ai_asking');
+            $('#proj-ai-answer').textContent = '';
+            const context = `Project: ${currentProjectName()}\n` +
+              (state.project.checkpoints || []).map(c => `- ${c.title} [${c.status}]`).join('\n');
+            try{
+              const { data, error } = await sb.functions.invoke('ask-gemini', { body: { context, question, lang: state.lang } });
+              if(error) throw error;
+              $('#proj-ai-status').textContent = '';
+              $('#proj-ai-answer').textContent = (data && data.answer) || '';
+            }catch(err){
+              $('#proj-ai-status').textContent = '';
+              toast(t('ask_ai_failed'));
+            }
+          }
+        }
+      ]
+    );
+  }
   $('#btn-back').onclick = async () => {
     closeOverlays();
     if(state.demo){
@@ -1415,15 +1841,15 @@
     const email = $('#auth-email').value.trim();
     const password = $('#auth-password').value;
     $('#auth-err').style.display = 'none';
-    if(!email || !password){ authError('กรอกอีเมลและรหัสผ่าน'); return; }
+    if(!email || !password){ authError(t('err_fill_fields')); return; }
     try{
       const { error } = kind === 'signup'
         ? await sb.auth.signUp({ email, password })
         : await sb.auth.signInWithPassword({ email, password });
       if(error) throw error;
-      if(kind === 'signup') toast('สมัครสำเร็จ ตรวจอีเมลเพื่อยืนยัน (ถ้าจำเป็น) แล้วเข้าสู่ระบบ');
+      if(kind === 'signup') toast(t('signup_ok'));
       /* ถ้ามี session แล้ว onAuthStateChange ด้านล่างจะพาเข้าแอปให้เอง */
-    }catch(err){ authError(err.message || 'เข้าสู่ระบบไม่สำเร็จ'); }
+    }catch(err){ authError(err.message || t('err_signin_failed')); }
   }
   $('#auth-signin').onclick = () => doAuth('signin');
   $('#auth-signup').onclick = () => doAuth('signup');
@@ -1434,21 +1860,16 @@
       const { error } = await sb.auth.signInWithOAuth({ provider:'google' });
       if(error) throw error;
       /* จากนี้เบราว์เซอร์จะเด้งไป Google แล้วกลับมา onAuthStateChange จะรับ session เอง */
-    }catch(err){ authError(err.message || 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ'); }
+    }catch(err){ authError(err.message || t('err_google_failed')); }
   };
 
   /* ============ landing page + guest sandbox entry/exit ============ */
   function setDemoUI(on){
     state.demo = on;
-    const label = on
-      ? 'เข้าสู่ระบบเพื่อบันทึก <span class="en">Save with account</span>'
-      : 'ออกจากระบบ <span class="en">Sign out</span>';
-    $('#dash-signout').innerHTML = label;
-    $('#map-signout').innerHTML = label;
-    document.querySelectorAll('.topbar .eyebrow').forEach(el => {
-      if(on){ if(!el.dataset.orig) el.dataset.orig = el.textContent; el.textContent = 'โหมดทดลอง · Demo'; }
-      else if(el.dataset.orig){ el.textContent = el.dataset.orig; }
-    });
+    applyLang();
+    /* Edge Function ask-gemini ต้องล็อกอินจริง โหมดทดลองไม่มี session เลยซ่อนทางเข้าฟีเจอร์นี้ทั้งหมด */
+    $('#btn-ask-ai-project').hidden = on;
+    $('#cp-ai-field').hidden = on;
   }
   function enterDemo(){
     setDemoUI(true);
@@ -1464,21 +1885,23 @@
   function goHome(){
     if(state.demo || !state.user){ show('landing'); return; }
     if(state.view === 'map') $('#btn-back').click();
+    else if(state.view === 'analytics') $('#btn-analytics-back').click();
   }
   $('#auth-logo').onclick = goHome;
   $('#dash-logo').onclick = goHome;
   $('#map-logo').onclick = goHome;
+  $('#analytics-logo').onclick = goHome;
 
   /* ============ guided tour ============ */
   const TOUR_DASH = [
-    { sel:'#btn-new-project', title:'เริ่มต้นที่นี่', text:'กดปุ่มนี้เพื่อสร้างโปรเจกต์แรกของคุณ เลือกเทมเพลตธุรกิจได้เลยถ้าไม่อยากเริ่มจากศูนย์' },
-    { sel:'#dash-content', title:'รายการโปรเจกต์ของทีม', text:'ทุกโปรเจกต์จะอยู่ที่นี่พร้อมแถบความคืบหน้า กดที่การ์ดเพื่อเปิด mind map' },
-    { sel:'#dash-refresh', title:'ข้อมูลเรียลไทม์', text:'ข้อมูลซิงก์กับทีมอัตโนมัติอยู่แล้ว กดปุ่มนี้ได้ถ้าอยากรีเฟรชด้วยตัวเอง' }
+    { sel:'#btn-new-project', title:{ th:'เริ่มต้นที่นี่', en:'Start here' }, text:{ th:'กดปุ่มนี้เพื่อสร้างโปรเจกต์แรกของคุณ เลือกเทมเพลตธุรกิจได้เลยถ้าไม่อยากเริ่มจากศูนย์', en:'Click this button to create your first project. Pick a business template if you don’t want to start from scratch.' } },
+    { sel:'#dash-content', title:{ th:'รายการโปรเจกต์ของทีม', en:'Your team’s projects' }, text:{ th:'ทุกโปรเจกต์จะอยู่ที่นี่พร้อมแถบความคืบหน้า กดที่การ์ดเพื่อเปิด mind map', en:'Every project shows up here with a progress bar. Click a card to open its mind map.' } },
+    { sel:'#dash-refresh', title:{ th:'ข้อมูลเรียลไทม์', en:'Real-time data' }, text:{ th:'ข้อมูลซิงก์กับทีมอัตโนมัติอยู่แล้ว กดปุ่มนี้ได้ถ้าอยากรีเฟรชด้วยตัวเอง', en:'Data syncs with your team automatically. Click this button if you want to refresh it manually.' } }
   ];
   const TOUR_MAP = [
-    { sel:'#btn-new-cp', title:'เพิ่ม checkpoint', text:'กดเพื่อเพิ่ม checkpoint แรกของโปรเจกต์นี้ แล้วใส่สถานะ ผู้รับผิดชอบ และหมายเหตุได้เลย' },
-    { sel:'[data-add]', title:'แตกกิ่งย่อย', text:'กด + ข้าง checkpoint ไหนก็ได้ เพื่อเพิ่ม sub-checkpoint ใต้อันนั้น' },
-    { sel:'#btn-team', title:'จัดการทีม', text:'เพิ่มรายชื่อผู้รับผิดชอบที่นี่ แล้วเลือกได้ตอนแก้ไข checkpoint' }
+    { sel:'#btn-new-cp', title:{ th:'เพิ่ม checkpoint', en:'Add a checkpoint' }, text:{ th:'กดเพื่อเพิ่ม checkpoint แรกของโปรเจกต์นี้ แล้วใส่สถานะ ผู้รับผิดชอบ และหมายเหตุได้เลย', en:'Click to add this project’s first checkpoint, then set its status, assignee, and notes.' } },
+    { sel:'[data-add]', title:{ th:'แตกกิ่งย่อย', en:'Branch out' }, text:{ th:'กด + ข้าง checkpoint ไหนก็ได้ เพื่อเพิ่ม sub-checkpoint ใต้อันนั้น', en:'Click the + next to any checkpoint to add a sub-checkpoint under it.' } },
+    { sel:'#btn-team', title:{ th:'จัดการทีม', en:'Manage your team' }, text:{ th:'เพิ่มรายชื่อผู้รับผิดชอบที่นี่ แล้วเลือกได้ตอนแก้ไข checkpoint', en:'Add teammates here, then assign them when editing a checkpoint.' } }
   ];
 
   function tourStep(steps, i, flagKey){
@@ -1500,10 +1923,12 @@
     spot.style.height = (r.height + pad * 2) + 'px';
     spot.classList.add('on');
 
-    tip.innerHTML = `<b style="font-size:13px;font-weight:600">${esc(step.title)}</b><p>${esc(step.text)}</p>
+    const stepTitle = step.title[state.lang] || step.title.th;
+    const stepText = step.text[state.lang] || step.text.th;
+    tip.innerHTML = `<b style="font-size:13px;font-weight:600">${esc(stepTitle)}</b><p>${esc(stepText)}</p>
       <div class="row" style="display:flex">
-        <button class="btn btn-ghost btn-sm" id="tour-skip">ข้าม <span class="en">Skip</span></button>
-        <button class="btn btn-primary btn-sm" id="tour-next">${i === steps.length - 1 ? 'เสร็จสิ้น' : 'ถัดไป'}</button>
+        <button class="btn btn-ghost btn-sm" id="tour-skip">${esc(t('tour_skip'))}</button>
+        <button class="btn btn-primary btn-sm" id="tour-next">${i === steps.length - 1 ? esc(t('tour_finish')) : esc(t('tour_next'))}</button>
       </div>`;
     const top = Math.min(r.bottom + 12, window.innerHeight - 160);
     const left = clamp(r.left, 12, window.innerWidth - 272);
@@ -1550,7 +1975,7 @@
       maybeRunTour(TOUR_DASH, 'tour_dash_seen');
     }catch(err){
       show('error');
-      $('#err-msg').textContent = 'อ่านข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง (' + (err && err.message ? err.message : 'unknown') + ')';
+      $('#err-msg').textContent = t('load_failed') + ' (' + (err && err.message ? err.message : 'unknown') + ')';
     }
   }
 
@@ -1576,6 +2001,11 @@
     if(session) await enterApp();
     else show('landing');
   }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.lang-toggle [data-lang]');
+    if(b) setLang(b.dataset.lang);
+  });
+  applyLang();
   boot();
 })();
 </script>
