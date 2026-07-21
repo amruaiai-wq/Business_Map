@@ -42,7 +42,10 @@ Deno.serve(async (req: Request) => {
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: userText }] }],
           systemInstruction: { parts: [{ text: systemPrompt(lang === "en" ? "en" : "th") }] },
-          generationConfig: { maxOutputTokens: 512 },
+          // thinkingBudget: 0 turns off Gemini 2.5's internal "thinking" tokens — without this,
+          // reasoning tokens can eat the whole maxOutputTokens budget before any visible text is
+          // written, cutting the answer off mid-sentence (reproduced during testing).
+          generationConfig: { maxOutputTokens: 1024, thinkingConfig: { thinkingBudget: 0 } },
         }),
       },
     );
