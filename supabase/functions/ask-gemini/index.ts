@@ -11,8 +11,8 @@ const GEMINI_MODEL = "gemini-2.5-flash";
 
 function systemPrompt(lang: string): string {
   return lang === "en"
-    ? "You are a concise, practical project-management assistant inside the Milemaps app. Answer the user's question about their project/checkpoint in 2-5 short sentences, in English. Be specific and actionable, not generic."
-    : "คุณเป็นผู้ช่วยด้านการบริหารโปรเจกต์ในแอป Milemaps ตอบคำถามของผู้ใช้เกี่ยวกับโปรเจกต์/checkpoint ของเขาแบบกระชับ 2-5 ประโยค เป็นภาษาไทย ให้คำแนะนำที่นำไปใช้ได้จริง ไม่พูดกว้าง ๆ";
+    ? "You are a concise, practical project-management assistant inside the Milemaps app. The message you receive always starts with real project/checkpoint data pulled directly from the user's account — treat every line of it as true and already existing; never say the project has no name or no checkpoints if any are listed. Reference specific checkpoint titles and statuses from that data in your answer. Answer the question in 2-5 short sentences, in English. Be specific and actionable, not generic."
+    : "คุณเป็นผู้ช่วยด้านการบริหารโปรเจกต์ในแอป Milemaps ข้อความที่ได้รับจะขึ้นต้นด้วยข้อมูลโปรเจกต์/checkpoint จริงที่ดึงมาจากบัญชีผู้ใช้เสมอ — ให้ถือว่าทุกบรรทัดเป็นข้อมูลจริงที่มีอยู่แล้ว ห้ามบอกว่าโปรเจกต์ไม่มีชื่อหรือไม่มี checkpoint ถ้ามีข้อมูลระบุไว้ ให้อ้างอิงชื่อ checkpoint และสถานะที่ให้มาโดยตรงในคำตอบ ตอบคำถามแบบกระชับ 2-5 ประโยค เป็นภาษาไทย ให้คำแนะนำที่นำไปใช้ได้จริง ไม่พูดกว้าง ๆ";
 }
 
 Deno.serve(async (req: Request) => {
@@ -32,7 +32,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const apiKey = Deno.env.get("GEMINI_API_KEY");
-    const userText = `ข้อมูลโปรเจกต์ / Project context:\n${trimmedContext}\n\nคำถาม / Question:\n${trimmedQuestion}`;
+    const userText = `=== Real project data (already exists, treat as fact) ===\n${trimmedContext || "(no additional details)"}\n=== End of project data ===\n\nUser's question: ${trimmedQuestion}`;
 
     const geminiRes = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
@@ -42,10 +42,12 @@ Deno.serve(async (req: Request) => {
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: userText }] }],
           systemInstruction: { parts: [{ text: systemPrompt(lang === "en" ? "en" : "th") }] },
-          // thinkingBudget: 0 turns off Gemini 2.5's internal "thinking" tokens — without this,
-          // reasoning tokens can eat the whole maxOutputTokens budget before any visible text is
-          // written, cutting the answer off mid-sentence (reproduced during testing).
-          generationConfig: { maxOutputTokens: 1024, thinkingConfig: { thinkingBudget: 0 } },
+          // A small nonzero thinking budget (rather than 0) lets the model actually attend to
+          // the supplied project context instead of ignoring it — thinkingBudget: 0 answered
+          // fast but sometimes claimed the given checkpoints didn't exist. maxOutputTokens is
+          // generous so thinking + the visible answer both fit without truncation (reproduced
+          // and fixed during testing: answers were previously cut off mid-sentence).
+          generationConfig: { maxOutputTokens: 2048, thinkingConfig: { thinkingBudget: 512 } },
         }),
       },
     );
