@@ -159,6 +159,12 @@
   .add-btn:hover circle{stroke:var(--accent);fill:var(--accent-soft)}
   .add-btn path{stroke:var(--ink-3);stroke-width:1.2;stroke-linecap:round}
   .add-btn:hover path{stroke:var(--accent)}
+  .lock-btn{cursor:pointer}
+  .lock-btn circle{fill:var(--surface);stroke:var(--line);stroke-width:1;transition:stroke var(--t),fill var(--t)}
+  .lock-btn:hover circle{stroke:var(--accent);fill:var(--accent-soft)}
+  .lock-btn path{fill:none;stroke:var(--ink-3);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+  .lock-btn.locked path{stroke:var(--accent);fill:var(--accent-soft)}
+  .lock-btn:hover path{stroke:var(--accent)}
   .map-empty{
     position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
     text-align:center;color:var(--ink-3);font-size:13px;pointer-events:none;
@@ -710,6 +716,9 @@
       assignee: r.assignee || '',
       note: r.note || '',
       docUrl: r.doc_url || '',
+      posX: r.pos_x != null ? r.pos_x : null,
+      posY: r.pos_y != null ? r.pos_y : null,
+      locked: !!r.locked,
       createdAt: r.created_at ? new Date(r.created_at).getTime() : Date.now()
     };
   }
@@ -814,6 +823,8 @@
     zoom_in:{ th:'ขยาย', en:'Zoom in' },
     zoom_out:{ th:'ย่อ', en:'Zoom out' },
     zoom_fit:{ th:'พอดีจอ', en:'Reset view' },
+    lock_position:{ th:'ล็อกตำแหน่ง', en:'Lock position' },
+    unlock_position:{ th:'ปลดล็อกตำแหน่ง', en:'Unlock position' },
     untitled_node:{ th:'(ไม่มีชื่อ)', en:'(untitled)' },
     default_project_name:{ th:'โปรเจกต์', en:'Project' },
 
@@ -1284,6 +1295,7 @@
   const view = { s:1, tx:0, ty:0 };
   const svg = $('#map'), vp = $('#viewport');
   let positions = new Map();
+  let dragOverride = null; // { id, x, y } — live position while a node-drag is in progress
 
   function childrenMap(cps){
     const m = new Map();
@@ -1306,13 +1318,23 @@
     const place = (c, a, r) => {
       if(seen.has(c.id)) return;
       seen.add(c.id);
-      pos.set(c.id, { x: Math.cos(a) * r, y: Math.sin(a) * r, a, r });
+      let x, y;
+      if(dragOverride && dragOverride.id === c.id){
+        x = dragOverride.x; y = dragOverride.y;
+      }else if(c.posX != null && c.posY != null){
+        x = c.posX; y = c.posY;
+      }else{
+        x = Math.cos(a) * r; y = Math.sin(a) * r;
+      }
+      const effA = (x === 0 && y === 0) ? a : Math.atan2(y, x);
+      const effR = Math.hypot(x, y) || r;
+      pos.set(c.id, { x, y, a: effA, r: effR });
       const ch = kids.get(c.id) || [];
       if(!ch.length) return;
-      const cr = r + 180;
+      const cr = effR + 180;
       let span = Math.min((ch.length * 175) / cr, Math.PI * 0.6);
       if(ch.length === 1) span = 0;
-      ch.forEach((k, i) => place(k, a - span/2 + span * (i + 0.5) / ch.length, cr));
+      ch.forEach((k, i) => place(k, effA - span/2 + span * (i + 0.5) / ch.length, cr));
     };
     roots.forEach((c, i) => place(c, -Math.PI/2 + i * 2 * Math.PI / Math.max(n,1), R1));
     // node กำพร้า (parent ถูกลบ) → ปัดเป็นระดับ 1
@@ -1356,6 +1378,13 @@
           <text class="node-title" x="28" y="${NH/2 + ty}" dominant-baseline="middle">${esc(title)}</text>
           ${hasA ? `<text class="node-sub" x="28" y="${NH/2 + 12}" dominant-baseline="middle">${esc(who)}</text>` : ''}
           ${c.note ? `<circle cx="${NW-11}" cy="11" r="2.5" fill="#D4D4D4"></circle>` : ''}
+          ${c.posX != null ? `
+          <g class="lock-btn${c.locked ? ' locked' : ''}" data-lock="${esc(c.id)}" transform="translate(11,11)" aria-label="${esc(t(c.locked ? 'unlock_position' : 'lock_position'))}">
+            <circle r="8"></circle>
+            ${c.locked
+              ? '<path d="M -3 -0.5 V -2.5 A 3 3 0 0 1 3 -2.5 V -0.5 M -3.5 -0.5 H 3.5 V 3 H -3.5 Z"></path>'
+              : '<path d="M -3 -0.5 V -2.5 A 3 3 0 0 1 3 -2.5 M -3.5 -0.5 H 3.5 V 3 H -3.5 Z"></path>'}
+          </g>` : ''}
           <g class="add-btn" data-add="${esc(c.id)}" transform="translate(${NW + 11},${NH/2})">
             <circle r="11"></circle>
             <path d="M -4.5 0 H 4.5 M 0 -4.5 V 4.5"></path>
@@ -1406,15 +1435,34 @@
     applyView();
   }
 
-  /* pan + pinch */
+  /* pan + pinch + node drag */
   const ptrs = new Map();
-  let panning = false, moved = false, last = null, pinchD = 0;
+  let panning = false, moved = false, last = null, pinchD = 0, dragging = null; // dragging = { id, dx, dy } offset from pointer to node origin
+  function toLocal(e){
+    const r = svg.getBoundingClientRect();
+    return { x: (e.clientX - r.left - view.tx) / view.s, y: (e.clientY - r.top - view.ty) / view.s };
+  }
   svg.addEventListener('pointerdown', e => {
     svg.setPointerCapture(e.pointerId);
     ptrs.set(e.pointerId, { x:e.clientX, y:e.clientY });
     moved = false;
-    if(ptrs.size === 1){ panning = true; last = { x:e.clientX, y:e.clientY }; svg.classList.add('grabbing'); }
-    if(ptrs.size === 2){ panning = false; pinchD = pdist(); }
+    if(ptrs.size === 1){
+      /* setPointerCapture ด้านบนทำให้ e.target ถูกเปลี่ยนเป็น svg เอง ต้องหา element จริงจากตำแหน่งแทน */
+      const hit = document.elementFromPoint(e.clientX, e.clientY) || e.target;
+      const draggable = !hit.closest('[data-add]') && !hit.closest('[data-lock]') && !hit.closest('[data-center]')
+        ? hit.closest('.node[data-id]') : null;
+      const cp = draggable ? state.project.checkpoints.find(c => c.id === draggable.dataset.id) : null;
+      if(cp && !cp.locked){
+        const p = positions.get(cp.id);
+        const loc = toLocal(e);
+        dragging = { id: cp.id, dx: loc.x - p.x, dy: loc.y - p.y };
+        panning = false;
+      }else{
+        dragging = null;
+        panning = true; last = { x:e.clientX, y:e.clientY }; svg.classList.add('grabbing');
+      }
+    }
+    if(ptrs.size === 2){ panning = false; dragging = null; dragOverride = null; pinchD = pdist(); }
   });
   svg.addEventListener('pointermove', e => {
     if(!ptrs.has(e.pointerId)) return;
@@ -1428,6 +1476,13 @@
       pinchD = d; moved = true;
       return;
     }
+    if(dragging){
+      const loc = toLocal(e);
+      dragOverride = { id: dragging.id, x: loc.x - dragging.dx, y: loc.y - dragging.dy };
+      moved = true;
+      renderMap();
+      return;
+    }
     if(!panning) return;
     const dx = e.clientX - last.x, dy = e.clientY - last.y;
     if(Math.abs(dx) + Math.abs(dy) > 4) moved = true;
@@ -1438,7 +1493,28 @@
   const endPtr = e => {
     ptrs.delete(e.pointerId);
     if(ptrs.size < 2) pinchD = 0;
-    if(ptrs.size === 0){ panning = false; svg.classList.remove('grabbing'); }
+    if(ptrs.size === 0){
+      panning = false;
+      svg.classList.remove('grabbing');
+      if(dragging){
+        const finalPos = dragOverride;
+        dragging = null;
+        dragOverride = null;
+        /* ถ้าไม่มีการลากเกิดขึ้นจริง (แค่แตะ) ห้ามเรียก renderMap() ที่นี่ — การสร้าง DOM ใหม่กลางท่า pointerup
+           ทำให้ browser ยกเลิก click event ที่ควรจะตามมา (element เดิมถูกทำลายไปแล้ว) ปุ่ม/โหนดจะกดไม่ติด */
+        if(finalPos){
+          const cp = state.project.checkpoints.find(c => c.id === finalPos.id);
+          if(cp){
+            cp.posX = finalPos.x; cp.posY = finalPos.y;
+            if(!state.demo){
+              sb.from('checkpoints').update({ pos_x: finalPos.x, pos_y: finalPos.y }).eq('id', finalPos.id)
+                .then(({ error }) => { if(error) toast(t('save_failed')); });
+            }
+          }
+          renderMap();
+        }
+      }
+    }
   };
   svg.addEventListener('pointerup', endPtr);
   svg.addEventListener('pointercancel', endPtr);
@@ -1454,6 +1530,20 @@
     if(moved) return;
     /* setPointerCapture ด้านบนทำให้ e.target ถูกเปลี่ยนเป็น svg เอง ต้องหา element จริงจากตำแหน่งแทน */
     const hit = document.elementFromPoint(e.clientX, e.clientY) || e.target;
+    const lock = hit.closest('[data-lock]');
+    if(lock){
+      const cp = state.project.checkpoints.find(c => c.id === lock.dataset.lock);
+      if(cp){
+        const next = !cp.locked;
+        cp.locked = next;
+        if(!state.demo){
+          sb.from('checkpoints').update({ locked: next }).eq('id', cp.id)
+            .then(({ error }) => { if(error) toast(t('save_failed')); });
+        }
+        renderMap();
+      }
+      return;
+    }
     const add = hit.closest('[data-add]');
     if(add){ openEditor(null, add.dataset.add); return; }
     const node = hit.closest('.node[data-id]');
